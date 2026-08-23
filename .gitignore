@@ -1,0 +1,10 @@
+# Local OS/editor noise
+.DS_Store
+
+# User-generated presentations and project data
+*.pptx
+*.pptdlab.json
+dist/
+exports/
+local-data/
+company-content/
