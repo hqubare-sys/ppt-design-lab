@@ -35,7 +35,7 @@ def main() -> int:
     if not gitignore.is_file():
         fail("missing .gitignore privacy boundary")
     ignored_paths = gitignore.read_text(encoding="utf-8")
-    for marker in [".DS_Store", "*.pptx", "*.pptdlab.json", "dist/", "exports/", "local-data/", "company-content/"]:
+    for marker in [".DS_Store", "*.pptx", "*.pptdlab", "*.pptdlab.json", "dist/", "exports/", "local-data/", "company-content/"]:
         if marker not in ignored_paths:
             fail(f".gitignore is missing privacy boundary: {marker}")
 
@@ -94,6 +94,10 @@ def main() -> int:
     player_fixture = (ROOT / "tests" / "fixture-player-deck.html").read_text(encoding="utf-8")
     if player_fixture.count('<section class="slide"') != 3 or player_fixture.count('class="nav-dot"') != 3:
         fail("player-deck fixture must contain three pages and three navigation dots")
+    roundtrip_harness = (ROOT / "tests" / "roundtrip-harness.html").read_text(encoding="utf-8")
+    for marker in ["buildStandaloneHTML", "data-pptdlab-project-style", "data-pptdlab-player-style", "旧版导出 HTML", "projectFilename"]:
+        if marker not in roundtrip_harness:
+            fail(f"round-trip harness is missing: {marker}")
     if 'querySelectorAll(".slide, [data-slide]' in sanitizer:
         fail("sanitizer still treats generic data-slide controls as pages")
     if "findSlideNodes(parsed)" not in sanitizer or "data-pptdlab-slide-root" not in sanitizer:
@@ -102,6 +106,15 @@ def main() -> int:
         fail("sanitizer does not synchronize safe page DOM ids for page-specific CSS")
     if '>.section-label{top:20px!important;}' not in sanitizer:
         fail("sanitizer does not keep direct section labels above the title safe area")
+    if "data-pptdlab-player-style" not in exporter or "data-pptdlab-project-style" not in exporter:
+        fail("standalone HTML does not separate project and player styles")
+    if "stripLegacyPlayerCss" not in sanitizer or ".pptdlab-stage" not in sanitizer:
+        fail("sanitizer lacks standalone player CSS isolation or deck detection")
+    project_io = (APP / "project-io.js").read_text(encoding="utf-8")
+    if ".pptdlab`" not in project_io or "application/x-ppt-design-lab+json" not in project_io:
+        fail("project download does not use the dedicated .pptdlab format")
+    if ".pptdlab,.pptdlab.json" not in index:
+        fail("project input does not accept new and legacy extensions")
     app_source = (APP / "app.js").read_text(encoding="utf-8")
     if "已识别 ${state.project.slides.length} 页" not in app_source:
         fail("import status does not report recognized page count")
@@ -109,6 +122,9 @@ def main() -> int:
         fail("duplicated pages do not receive a fresh DOM id")
     if 'id="slide-01" data-slide-id="slide-01"' not in app_source:
         fail("LorealGPT prompt does not require matching DOM and project slide ids")
+    for marker in ["88–120px", "64–88px", "40–52px", "2px≈1pt", "时间线必须使用统一"]:
+        if marker not in app_source:
+            fail(f"LorealGPT prompt is missing typography/layout guidance: {marker}")
     for marker in ["MOVE_THRESHOLD", "offsetParentPosition", "Math.hypot(dx, dy)", 'event.detail > 1', 'target.children.length > 0 || !target.textContent.trim()']:
         if marker not in app_source:
             fail(f"editor interaction guard is missing: {marker}")

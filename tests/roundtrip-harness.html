@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>HTML 与项目文件往返测试</title>
+  <style>
+    body { margin: 24px; color: #172033; font: 16px/1.5 Arial, sans-serif; }
+    #status { white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Round-trip harness</h1>
+  <p id="status">正在检查…</p>
+  <script src="../app/sanitizer.js"></script>
+  <script src="../app/project-io.js"></script>
+  <script src="../app/exporter.js"></script>
+  <script>
+    (function () {
+      const status = document.getElementById("status");
+      const source = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>通用往返示例</title><style>
+        :root{--paper:#fff4df;--ink:#172033;--accent:#b84a2c}
+        html,body{margin:0;padding:0}
+        .deck{width:1920px}
+        .slide{position:relative;width:1920px;height:1080px;background:var(--paper);color:var(--ink)}
+        h1{position:absolute;left:120px;top:100px;font-size:72px}
+      </style></head><body><main class="deck" data-deck>
+        <section class="slide" data-slide-id="slide-01"><h1>通用页面一</h1></section>
+        <section class="slide" data-slide-id="slide-02"><h1>通用页面二</h1></section>
+      </main></body></html>`;
+
+      function assert(condition, message) {
+        if (!condition) throw new Error(message);
+      }
+
+      function assertProject(project, label) {
+        assert(project.slides.length === 2, `${label} 未保留全部页面。`);
+        assert(!/pptdlab-(?:player|stage|controls|count)/i.test(project.css), `${label} 仍含播放器选择器。`);
+        assert(!/body\s*\{[^}]*display\s*:\s*grid/i.test(project.css), `${label} 仍含播放器 body grid 规则。`);
+      }
+
+      try {
+        const project = window.PPTDLProjectIO.createFromHTML(source);
+        const standalone = window.PPTDLExporter.buildStandaloneHTML(project);
+        assert((standalone.match(/data-pptdlab-project-style/g) || []).length === 1, "导出 HTML 未标记项目样式。 ");
+        assert((standalone.match(/data-pptdlab-player-style/g) || []).length === 1, "导出 HTML 未标记播放器样式。 ");
+
+        const reopened = window.PPTDLProjectIO.createFromHTML(standalone);
+        assertProject(reopened, "新导出 HTML");
+
+        // Recreate the pre-fix format with both style blocks merged to verify
+        // that legacy exports are cleaned without dropping project CSS.
+        const legacy = standalone
+          .replace('<style data-pptdlab-project-style>', '<style>')
+          .replace('</style><style data-pptdlab-player-style>', '');
+        const legacyProject = window.PPTDLProjectIO.createFromHTML(legacy);
+        assertProject(legacyProject, "旧版导出 HTML");
+        assert(legacyProject.css.includes("--paper:#fff4df"), "旧版导入误删了项目主题变量。 ");
+
+        const saved = window.PPTDLProjectIO.serialize(project);
+        const restored = window.PPTDLProjectIO.normalizeProject(JSON.parse(saved));
+        assertProject(restored, "项目文件");
+        assert(window.PPTDLProjectIO.projectFilename("通用往返示例") === "通用往返示例.pptdlab", "新项目扩展名不正确。 ");
+        status.textContent = "PASS\n新旧 HTML 导入、页面数量、播放器 CSS 隔离和项目 JSON 往返均通过。";
+      } catch (error) {
+        status.textContent = "FAIL: " + (error.message || error);
+      }
+    }());
+  </script>
+</body>
+</html>
