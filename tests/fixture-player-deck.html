@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>通用多页导入测试</title>
+  <style>
+    .slide { display: none; width: 1920px; height: 1080px; }
+    .slide[data-active] { display: block; }
+    .section-label { position: absolute; top: 50px; left: 60px; font-size: 18px; }
+    #slide-02 h1 { position: absolute; left: 120px; top: 90px; font-size: 48px; }
+    #slide-03 h1 { position: absolute; left: 60px; top: 50px; font-size: 40px; }
+  </style>
+</head>
+<body>
+  <main class="deck" data-deck>
+    <section class="slide" data-slide-id="slide-01" data-active><h1>通用页面一</h1></section>
+    <section class="slide" data-slide-id="slide-02"><h1>通用页面二</h1></section>
+    <section class="slide" data-slide-id="slide-03"><span class="section-label">章节标签</span><h1>通用页面三</h1></section>
+  </main>
+  <nav class="nav-controls" aria-label="原网页翻页控件">
+    <span class="nav-dot" data-slide="0"></span>
+    <span class="nav-dot" data-slide="1"></span>
+    <span class="nav-dot" data-slide="2"></span>
+  </nav>
+  <script>document.querySelectorAll('.nav-dot').forEach(function () {});</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <title>不安全测试页面</title>
+  <link rel="stylesheet" href="https://example.invalid/theme.css">
+  <style>@import url("https://example.invalid/font.css"); .slide { background-image: url("https://example.invalid/bg.png"); }</style>
+</head>
+<body onload="alert('blocked')" style="background-image:url(https://example.invalid/tracker.png)">
+  <script>fetch('https://example.invalid/leak')</script>
+  <iframe src="https://example.invalid/frame"></iframe>
+  <main class="deck">
+    <section class="slide" data-slide-id="slide-01">
+      <h1 onclick="alert('blocked')">应保留的文字</h1>
+      <img src="https://example.invalid/image.png" onerror="alert('blocked')" alt="外部图片">
+      <a href="javascript:alert('blocked')">活动链接</a>
+    </section>
+  </main>
+</body>
+</html>

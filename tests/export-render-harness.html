@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>PPTX 导出渲染回归</title>
+  <style>body{margin:0;background:#dde3eb;font:16px Arial,sans-serif}#result{display:block;width:960px;height:540px;margin:20px auto;border:1px solid #999}#status{text-align:center}</style>
+</head>
+<body>
+  <img id="result" alt="导出渲染结果">
+  <p id="status">正在渲染</p>
+  <script src="../app/vendor/html-to-image.js"></script>
+  <script src="../app/exporter.js"></script>
+  <script>
+    (async function () {
+      const project = {
+        css: ':root{--page:#fff4df;--accent:#b84a2c;--card:#fff;--shadow:0 8px 24px rgba(0,0,0,.16)}*{box-sizing:border-box}.slide{position:relative;background:var(--page);color:var(--accent);font-family:Arial,sans-serif}.card{position:absolute;left:160px;top:250px;width:900px;height:360px;padding:48px;background:var(--card);border-left:12px solid var(--accent);border-radius:28px;box-shadow:var(--shadow)}h1{margin:0;font-size:72px}.card p{font-size:40px}.single-line{position:absolute;left:160px;top:760px;width:420px;font-size:32px}.multi-line{position:absolute;left:700px;top:760px;width:180px;font-size:32px}',
+      };
+      const slide = {
+        html: '<section class="slide" data-pptdlab-slide-root="true"><h1 style="position:absolute;left:160px;top:90px">主题变量渲染测试</h1><div class="card"><p>背景、主题色、边框和阴影应全部保留</p></div><p class="single-line">负责人：待确认</p><p class="multi-line">第一行<br>第二行</p></section>',
+      };
+      try {
+        const probe = document.createElement('div');
+        probe.style.cssText = 'position:absolute;left:10px;top:600px;width:600px;height:100px;background:#fff4df';
+        probe.innerHTML = '<span style="display:block;width:360px">负责人：待确认</span><span style="display:block;width:160px">第一行<br>第二行</span>';
+        document.body.appendChild(probe);
+        window.PPTDLExporter.stabilizeSingleLineText(probe);
+        const probeNodes = probe.querySelectorAll('span');
+        if (probeNodes[0].style.whiteSpace !== 'nowrap') throw new Error('单行中文稳定样式未生效。');
+        if (probeNodes[1].style.whiteSpace === 'nowrap') throw new Error('显式多行文字被错误压成单行。');
+        const background = window.PPTDLExporter.exportBackgroundColor(probe);
+        if (!/255,\s*244,\s*223/.test(background)) throw new Error('导出背景未读取页面浅米色。');
+        probe.remove();
+        document.getElementById('result').src = await window.PPTDLExporter.renderSlideToPng(project, slide);
+        document.getElementById('status').textContent = 'PASS';
+      } catch (error) {
+        document.getElementById('status').textContent = 'FAIL: ' + (error.message || error);
+      }
+    }());
+  </script>
+</body>
+</html>

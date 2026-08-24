@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>通用编辑交互测试</title>
+  <style>
+    :root { --page: #fff4df; --accent: #b47d1b; --ink: #24364f; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; }
+    .slide { position: relative; width: 1920px; height: 1080px; background: var(--page); color: var(--ink); font-family: Arial, sans-serif; }
+    .slide-title { position: absolute; left: 140px; top: 100px; margin: 0; font-size: 64px; }
+    .card { position: absolute; left: 240px; top: 280px; width: 900px; height: 520px; padding: 40px; background: #fff; border: 4px solid var(--accent); border-radius: 24px; box-shadow: 0 12px 30px rgba(36, 54, 79, .16); }
+    .card-title { margin: 0; font-size: 40px; }
+    .nested-module { position: absolute; left: 80px; top: 120px; width: 300px; height: 120px; padding: 24px; background: #d8b45a; border-radius: 12px; }
+    .nested-label { margin: 0; font-size: 28px; }
+    .owner { position: absolute; left: 140px; top: 900px; width: 420px; font-size: 28px; }
+    .multi-line { position: absolute; left: 900px; top: 900px; width: 220px; font-size: 28px; }
+  </style>
+</head>
+<body>
+  <main class="deck" data-deck>
+    <section class="slide" id="slide-01" data-slide-id="slide-01" data-screen-label="01">
+      <h1 class="slide-title">通用编辑交互测试</h1>
+      <div class="card" data-test="container">
+        <h2 class="card-title">嵌套模块容器</h2>
+        <div class="nested-module" data-test="nested-module"><span class="nested-label">拖动我</span></div>
+      </div>
+      <p class="owner">负责人：待确认</p>
+      <p class="multi-line">这是一段本来需要换行的通用测试文字。</p>
+    </section>
+  </main>
+</body>
+</html>

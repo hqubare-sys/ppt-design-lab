@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>PPT Design Lab 编辑交互回归</title>
+  <style>
+    body { margin: 0; padding: 16px; background: #eef2f7; color: #172033; font: 15px/1.5 Arial, sans-serif; }
+    h1 { margin: 0 0 12px; font-size: 20px; }
+    #status { padding: 10px 12px; border-radius: 8px; background: #fff; }
+    #status.pass { color: #176b3a; background: #e7f6ed; }
+    #status.fail { color: #a12929; background: #fdecec; }
+    iframe { display: block; width: 1px; height: 1px; border: 0; position: absolute; left: -10000px; top: 0; }
+  </style>
+</head>
+<body>
+  <h1>通用编辑交互回归</h1>
+  <div id="status">正在载入测试页面…</div>
+  <iframe id="fixture" src="fixture-editor-interactions.html" title="通用 fixture"></iframe>
+  <iframe id="editor" src="../app/index.html" title="PPT Design Lab"></iframe>
+  <script>
+    (async function () {
+      const status = document.getElementById("status");
+      const fixtureFrame = document.getElementById("fixture");
+      const editorFrame = document.getElementById("editor");
+
+      function fail(message) {
+        throw new Error(message);
+      }
+
+      function assert(condition, message) {
+        if (!condition) fail(message);
+      }
+
+      function wait(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+
+      async function waitFor(read, message, timeout = 5000) {
+        const started = Date.now();
+        while (Date.now() - started < timeout) {
+          const value = read();
+          if (value) return value;
+          await wait(50);
+        }
+        fail(message);
+      }
+
+      function pointerEvent(view, type, x, y, detail = 1) {
+        return new view.PointerEvent(type, { bubbles: true, clientX: x, clientY: y, button: 0, detail });
+      }
+
+      try {
+        await waitFor(() => fixtureFrame.contentDocument?.body, "通用 fixture 未载入。", 5000);
+        await waitFor(() => editorFrame.contentDocument?.getElementById("htmlInput"), "编辑器未载入。", 8000);
+        const fixtureHTML = fixtureFrame.contentDocument.documentElement.outerHTML;
+        const appDocument = editorFrame.contentDocument;
+        appDocument.getElementById("htmlInput").value = fixtureHTML;
+        appDocument.getElementById("sanitizeImportButton").click();
+
+        const slideFrame = await waitFor(
+          () => {
+            const frame = appDocument.getElementById("slideFrame");
+            return frame?.contentDocument?.querySelector('[data-test="nested-module"]') ? frame : null;
+          },
+          "编辑器未完成 HTML 导入。",
+          8000,
+        );
+        const frameDocument = slideFrame.contentDocument;
+        const view = slideFrame.contentWindow;
+        const slide = frameDocument.querySelector(".slide");
+        const card = frameDocument.querySelector('[data-test="container"]');
+        const nested = frameDocument.querySelector('[data-test="nested-module"]');
+        assert(slide && card && nested, "fixture 结构未保留。");
+        assert(frameDocument.defaultView.getComputedStyle(slide).backgroundColor !== "rgb(255, 255, 255)", "浅米色页面背景未保留。");
+
+        const cardStyleBefore = card.getAttribute("style") || "";
+        card.dispatchEvent(new view.MouseEvent("dblclick", { bubbles: true, detail: 2 }));
+        assert((card.getAttribute("style") || "") === cardStyleBefore, "双击结构容器改变了 style。");
+        assert(card.getAttribute("contenteditable") !== "true" && !card.isContentEditable, "结构容器不应进入 contenteditable。");
+
+        const nestedStyleBefore = nested.getAttribute("style") || "";
+        nested.dispatchEvent(pointerEvent(view, "pointerdown", 100, 100));
+        frameDocument.dispatchEvent(pointerEvent(view, "pointermove", 102, 102));
+        frameDocument.dispatchEvent(pointerEvent(view, "pointerup", 102, 102));
+        assert((nested.getAttribute("style") || "") === nestedStyleBefore, "微小移动不应写入定位样式。");
+
+        const parent = nested.offsetParent;
+        assert(parent === card, "嵌套模块的实际 offsetParent 未保持为父卡片。");
+        const nestedRect = nested.getBoundingClientRect();
+        const parentRect = parent.getBoundingClientRect();
+        const startLeft = nestedRect.left - parentRect.left - (parent.clientLeft || 0) + (parent.scrollLeft || 0);
+        const startTop = nestedRect.top - parentRect.top - (parent.clientTop || 0) + (parent.scrollTop || 0);
+        nested.dispatchEvent(pointerEvent(view, "pointerdown", 200, 200));
+        frameDocument.dispatchEvent(pointerEvent(view, "pointermove", 212, 207));
+        frameDocument.dispatchEvent(pointerEvent(view, "pointerup", 212, 207));
+        assert(nested.style.position === "absolute", "真正拖动后嵌套模块未切换为绝对定位。");
+        assert(Math.abs(parseFloat(nested.style.left) - (startLeft + 12)) <= 1, "嵌套模块拖动后 left 未按父 offsetParent 坐标保持。");
+        assert(Math.abs(parseFloat(nested.style.top) - (startTop + 7)) <= 1, "嵌套模块拖动后 top 未按父 offsetParent 坐标保持。");
+
+        status.textContent = "PASS：容器双击、微小移动、嵌套拖动和浅米色背景检查通过。";
+        status.className = "pass";
+      } catch (error) {
+        status.textContent = "FAIL: " + (error.message || error);
+        status.className = "fail";
+      }
+    }());
+  </script>
+</body>
+</html>
