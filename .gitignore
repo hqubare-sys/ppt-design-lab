@@ -3,6 +3,7 @@
 
 # User-generated presentations and project data
 *.pptx
+*.pptdlab
 *.pptdlab.json
 dist/
 exports/
