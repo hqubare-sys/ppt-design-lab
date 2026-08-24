@@ -3,17 +3,17 @@ record_id: PRJ-012
 record_type: project
 status: active
 stage: build
-progress: 68
+progress: 80
 version: v0.1-mvp
 created: 2026-08-23
-updated: 2026-08-23
-last_progress_update: 2026-08-23
+updated: 2026-08-24
+last_progress_update: 2026-08-24
 updated_by: codex
-revision: 3
+revision: 4
 platforms: [codex, workbuddy]
 maintainer: cindy
 summary: 面向公司普通用户电脑的本地优先网页版 PPT 设计工具，使用 LorealGPT 手工桥接生成结构化 HTML 幻灯片，并支持可视化编辑及 HTML、PPTX 导出。
-next_action: 发布到 hqubare-sys/ppt-design-lab 后，在公司电脑真实 Chrome 或 Edge 中验证导入、编辑、HTML/PPTX 导出和全程无内容外传。
+next_action: 在公司电脑真实 Chrome 或 Edge 中打开 GitHub Pages，验证导入、编辑、HTML/PPTX 导出和全程无内容外传。
 definition_of_done: v0.1 可在公司浏览器中打开，完成 LorealGPT 提示词复制与 HTML 粘贴导入、结构化幻灯片可视化编辑、自包含 HTML 和图片型 PPTX 导出，并通过无业务内容外传的网络验收。
 tags: [职业发展, PPT, HTML, 浏览器工具, 本地优先, LorealGPT]
 related: [CAP-003]
@@ -116,4 +116,4 @@ python3 scripts/audit_project.py
 
 ## 当前状态
 
-v0.1 浏览器原型已经完成本机开发验收，并已用通用播放器样例及一份本地 8 页 LorealGPT HTML 验证多页导入与编辑控件；GitHub 仓库和 Pages 尚未创建，公司电脑真实环境验收尚未完成，因此当前不标记为正式可用版本。
+v0.1 浏览器原型已完成本机开发验收；公开仓库与 GitHub Pages 已发布并返回 HTTP 200，仓库树已核对为 27 个工具框架、文档、测试和许可证文件。公司电脑真实环境与网络零内容外传验收尚未完成，因此当前仍标记为测试版本。
