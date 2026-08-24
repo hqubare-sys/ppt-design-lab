@@ -108,7 +108,7 @@
             <textarea class="text-area" id="elementTextInput" rows="4" placeholder="双击画布文字即可编辑"></textarea>
             <div class="field-row">
               <div class="field field-grow"><label class="field-label" for="fontFamilyInput">字体</label><select class="text-input" id="fontFamilyInput"><option>Aptos</option><option>Arial</option><option>Helvetica</option><option>Georgia</option><option>Times New Roman</option><option>Microsoft YaHei</option><option>SimSun</option></select></div>
-              <div class="field field-small"><label class="field-label" for="fontSizeInput">字号</label><input class="text-input" id="fontSizeInput" type="number" min="8" max="240" step="1"></div>
+              <div class="field field-small"><label class="field-label" for="fontSizeInput">字号（CSS px）</label><input class="text-input" id="fontSizeInput" type="number" min="8" max="240" step="1"><div class="field-hint">1920×1080 画布：2px 约等于 1pt</div></div>
             </div>
             <div class="field-row">
               <div class="field field-grow"><label class="field-label" for="textColorInput">文字颜色</label><div class="color-field"><input id="textColorInput" type="color" value="#172033"><span id="textColorValue">#172033</span></div></div>
@@ -143,7 +143,7 @@
   </div>
 
   <input class="visually-hidden" id="htmlFileInput" type="file" accept=".html,.htm,text/html">
-  <input class="visually-hidden" id="projectFileInput" type="file" accept=".pptdlab.json,application/json,.json">
+  <input class="visually-hidden" id="projectFileInput" type="file" accept=".pptdlab,.pptdlab.json,.json,application/json,application/octet-stream,application/x-ppt-design-lab+json">
 
   <div class="modal-backdrop" id="importModal" hidden>
     <section class="modal" role="dialog" aria-modal="true" aria-labelledby="importModalTitle">

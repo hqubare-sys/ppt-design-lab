@@ -31,6 +31,156 @@
     "controls",
   ]);
 
+  // Standalone HTML exports use a separate, marked style block for the
+  // presentation player. Older exports put this block next to the project
+  // CSS, so the importer also removes only the known player rules below.
+  const PLAYER_STYLE_ATTRIBUTE = "data-pptdlab-player-style";
+  const PLAYER_CLASS_NAMES = ["pptdlab-player", "pptdlab-stage", "pptdlab-controls", "pptdlab-count"];
+
+  function findUnquotedCharacter(css, character, start) {
+    let quote = "";
+    let comment = false;
+    for (let index = start; index < css.length; index += 1) {
+      const current = css[index];
+      const next = css[index + 1];
+      if (comment) {
+        if (current === "*" && next === "/") {
+          comment = false;
+          index += 1;
+        }
+        continue;
+      }
+      if (quote) {
+        if (current === "\\") index += 1;
+        else if (current === quote) quote = "";
+        continue;
+      }
+      if (current === "/" && next === "*") {
+        comment = true;
+        index += 1;
+        continue;
+      }
+      if (current === '"' || current === "'") {
+        quote = current;
+        continue;
+      }
+      if (current === character) return index;
+    }
+    return -1;
+  }
+
+  function findMatchingBrace(css, openIndex) {
+    let depth = 1;
+    let quote = "";
+    let comment = false;
+    for (let index = openIndex + 1; index < css.length; index += 1) {
+      const current = css[index];
+      const next = css[index + 1];
+      if (comment) {
+        if (current === "*" && next === "/") {
+          comment = false;
+          index += 1;
+        }
+        continue;
+      }
+      if (quote) {
+        if (current === "\\") index += 1;
+        else if (current === quote) quote = "";
+        continue;
+      }
+      if (current === "/" && next === "*") {
+        comment = true;
+        index += 1;
+        continue;
+      }
+      if (current === '"' || current === "'") {
+        quote = current;
+        continue;
+      }
+      if (current === "{") depth += 1;
+      else if (current === "}" && --depth === 0) return index;
+    }
+    return -1;
+  }
+
+  function normalizedCssPrelude(prelude) {
+    return String(prelude || "")
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
+  }
+
+  function hasPlayerClassSelector(selector) {
+    return PLAYER_CLASS_NAMES.some((className) =>
+      new RegExp(`(?:^|[\\s>+~,(])\\.${className}(?=$|[.#:[\\s>+~,)])`, "i").test(selector)
+    );
+  }
+
+  function isLegacyPlayerRule(prelude, body) {
+    const selector = normalizedCssPrelude(prelude);
+    const selectors = selector.split(",").map((part) => part.trim()).filter(Boolean);
+    if (selectors.length && selectors.every(hasPlayerClassSelector)) return true;
+
+    const declarations = String(body || "").replace(/\s+/g, "").toLowerCase();
+    // These combinations are specific to the old standalone player's dark
+    // viewport and centered stage. A normal project body rule is preserved.
+    if ((selector === "html,body" || selector === "body,html") &&
+        declarations.includes("margin:0") &&
+        declarations.includes("min-height:100%") &&
+        declarations.includes("background:#111827") &&
+        declarations.includes("color:#fff")) return true;
+    if (selector === "body" &&
+        declarations.includes("display:grid") &&
+        declarations.includes("place-items:center") &&
+        declarations.includes("overflow:hidden")) return true;
+    return false;
+  }
+
+  function stripLegacyPlayerCss(cssText, warnings) {
+    const source = String(cssText || "");
+
+    function walk(css) {
+      let output = "";
+      let changed = false;
+      let cursor = 0;
+      while (cursor < css.length) {
+        const open = findUnquotedCharacter(css, "{", cursor);
+        if (open < 0) {
+          output += css.slice(cursor);
+          break;
+        }
+        const close = findMatchingBrace(css, open);
+        if (close < 0) {
+          output += css.slice(cursor);
+          break;
+        }
+        const prelude = css.slice(cursor, open);
+        const body = css.slice(open + 1, close);
+        const normalizedPrelude = normalizedCssPrelude(prelude);
+        if (isLegacyPlayerRule(prelude, body)) {
+          changed = true;
+        } else if (/^@(media|supports|layer|container|document)\b/i.test(normalizedPrelude)) {
+          const nested = walk(body);
+          if (nested.css.trim() || !nested.changed) {
+            output += `${prelude}{${nested.css}}`;
+          } else {
+            changed = true;
+          }
+          if (nested.changed) changed = true;
+        } else {
+          output += `${prelude}{${body}}`;
+        }
+        cursor = close + 1;
+      }
+      return { css: output, changed };
+    }
+
+    const result = walk(source);
+    if (result.changed) warnings.add("已忽略导出 HTML 中的播放器样式。");
+    return result.css;
+  }
+
   function warningFactory() {
     const list = [];
     const seen = new Set();
@@ -46,7 +196,7 @@
   }
 
   function safeCss(cssText, warnings) {
-    let css = String(cssText || "");
+    let css = stripLegacyPlayerCss(String(cssText || ""), warnings);
     const withoutTags = css.replace(/<\/?[a-z][^>]*>/gi, "");
     if (withoutTags !== css) warnings.add("已移除 CSS 文本中的 HTML 标签。");
     css = withoutTags;
@@ -182,7 +332,7 @@
 
   function findDeckContainers(parsed) {
     return topLevelCandidates(
-      Array.from(parsed.querySelectorAll("[data-deck], .deck, deck-stage"))
+      Array.from(parsed.querySelectorAll("[data-deck], .deck, deck-stage, .pptdlab-stage"))
         .filter((node) => node.nodeType === 1)
     );
   }
@@ -277,6 +427,11 @@
       }
     });
     parsed.querySelectorAll("style").forEach((node) => {
+      if (node.hasAttribute(PLAYER_STYLE_ATTRIBUTE)) {
+        node.remove();
+        warnings.add("已忽略导出 HTML 中的播放器样式。");
+        return;
+      }
       node.textContent = safeCss(node.textContent, warnings);
     });
     parsed.querySelectorAll("*").forEach((node) => scrubAttributes(node, warnings));
@@ -314,11 +469,12 @@
         if (!httpEquiv) headParts.push(node.outerHTML);
       } else if (node.tagName.toLowerCase() === "title") {
         headParts.push(`<title>${escapeText(node.textContent || title)}</title>`);
-      } else {
+      } else if (!node.hasAttribute(PLAYER_STYLE_ATTRIBUTE)) {
         headParts.push(`<style>${safeCss(node.textContent, warnings)}</style>`);
       }
     });
     const css = `${Array.from(parsed.querySelectorAll("style"))
+      .filter((style) => !style.hasAttribute(PLAYER_STYLE_ATTRIBUTE))
       .map((style) => safeCss(style.textContent || "", warnings))
       .join("\n")}\n${EDITOR_SLIDE_CSS}`;
     return {
@@ -353,6 +509,7 @@
     sanitizeDocument,
     sanitizeSlideHtml,
     safeCss,
+    stripLegacyPlayerCss,
     assignEditorIds,
     removeEditorArtifacts,
   };

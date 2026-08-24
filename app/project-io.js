@@ -114,7 +114,9 @@
     const title = (project.metadata?.title || "ppt-design-lab")
       .replace(/[^\w\-\u4e00-\u9fff]+/g, "-")
       .replace(/^-+|-+$/g, "") || "ppt-design-lab";
-    triggerDownload(new Blob([serialize(project)], { type: "application/json;charset=utf-8" }), `${title}.pptdlab.json`);
+    const filename = `${title}.pptdlab`;
+    triggerDownload(new Blob([serialize(project)], { type: "application/x-ppt-design-lab+json;charset=utf-8" }), filename);
+    return filename;
   }
 
   function readFile(file) {
@@ -188,6 +190,12 @@
     serialize,
     triggerDownload,
     downloadProject,
+    projectFilename(title) {
+      const base = String(title || "ppt-design-lab")
+        .replace(/[^\w\-\u4e00-\u9fff]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "ppt-design-lab";
+      return `${base}.pptdlab`;
+    },
     readFile,
   };
 })(window);

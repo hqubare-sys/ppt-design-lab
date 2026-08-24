@@ -53,7 +53,7 @@
       </script>
     `;
     return `<!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><style>${css}${playerCSS}</style></head>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><style data-pptdlab-project-style>${css}</style><style data-pptdlab-player-style>${playerCSS}</style></head>
 <body><main class="pptdlab-player"><div class="pptdlab-stage">${slides}</div><nav class="pptdlab-controls" aria-label="幻灯片控制"><button type="button" data-prev>上一页</button><span class="pptdlab-count">1 / 1</span><button type="button" data-next>下一页</button><button type="button" data-fullscreen>全屏</button></nav></main>${player}</body></html>`;
   }
 
