@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PPT Design Lab：在浏览器本机编辑结构化 HTML 幻灯片，并导出 HTML 或图片型 PPTX。">
+  <title>PPT Design Lab · 本地优先的 HTML PPT 工作台</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-block">
+        <div class="brand-mark" aria-hidden="true">✦</div>
+        <div>
+          <div class="brand-name">PPT Design Lab</div>
+          <div class="brand-subtitle">HTML → 可编辑演示文稿</div>
+        </div>
+      </div>
+      <div class="toolbar-group primary-actions" aria-label="文件和生成操作">
+        <button class="button button-ghost" id="newProjectButton" type="button">新建</button>
+        <button class="button button-ai" id="openAiButton" type="button"><span aria-hidden="true">✦</span> AI 生成</button>
+        <button class="button button-ghost" id="importHtmlButton" type="button">粘贴 HTML</button>
+        <button class="button button-ghost" id="openHtmlButton" type="button">打开 HTML</button>
+        <button class="button button-ghost" id="openProjectButton" type="button">打开项目</button>
+      </div>
+      <div class="toolbar-group export-actions" aria-label="导出操作">
+        <button class="button button-ghost" id="saveProjectButton" type="button">保存项目</button>
+        <button class="button button-outline" id="exportHtmlButton" type="button">导出 HTML</button>
+        <button class="button button-primary" id="exportPptxButton" type="button">导出 PPTX</button>
+      </div>
+      <div class="privacy-pill" title="内容只在当前浏览器内存中处理，不会自动上传">
+        <span class="privacy-dot" aria-hidden="true"></span>
+        <span>仅本机处理</span>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="sidebar" aria-label="幻灯片页面栏">
+        <div class="sidebar-heading">
+          <div>
+            <span class="eyebrow-label">PAGES</span>
+            <strong id="slideCountLabel">0 页</strong>
+          </div>
+          <button class="icon-button" id="addSlideButton" type="button" aria-label="新增页面" title="新增页面">＋</button>
+        </div>
+        <ol class="slide-list" id="slideList" aria-label="幻灯片列表"></ol>
+        <div class="sidebar-footer">
+          <div class="privacy-note"><span class="privacy-dot"></span><span>内容不离开此浏览器</span></div>
+          <button class="text-button" id="showPrivacyButton" type="button">查看隐私说明</button>
+        </div>
+      </aside>
+
+      <main class="editor-area">
+        <div class="editor-toolbar">
+          <div class="editor-context">
+            <span class="context-dot"></span>
+            <span id="projectTitleLabel">未命名演示文稿</span>
+            <span class="dirty-indicator" id="dirtyIndicator" hidden>未保存</span>
+          </div>
+          <div class="editor-shortcuts">
+            <button class="icon-button" id="undoButton" type="button" aria-label="撤销" title="撤销 (⌘/Ctrl+Z)">↶</button>
+            <button class="icon-button" id="redoButton" type="button" aria-label="恢复" title="恢复 (⌘/Ctrl+Shift+Z)">↷</button>
+            <span class="zoom-label" id="zoomLabel">100%</span>
+          </div>
+        </div>
+        <div class="canvas-area" id="canvasArea">
+          <div class="desktop-hint" id="desktopHint" hidden>建议使用桌面版 Chrome 或 Edge，以获得完整的画布编辑体验。</div>
+          <div class="canvas-viewport" id="canvasViewport">
+            <div class="canvas-frame" id="canvasFrame">
+              <iframe id="slideFrame" title="当前幻灯片编辑画布" sandbox="allow-same-origin"></iframe>
+            </div>
+          </div>
+          <div class="canvas-help"><span>双击文字编辑</span><span>拖动模块移动</span><span>方向键微调</span></div>
+        </div>
+        <div class="statusbar">
+          <span id="statusMessage">准备就绪。你可以载入演示页面或使用内置示例。</span>
+          <span class="status-right" id="selectionSummary">未选择元素</span>
+        </div>
+      </main>
+
+      <aside class="inspector" aria-label="属性面板">
+        <div class="inspector-header">
+          <div>
+            <span class="eyebrow-label">INSPECTOR</span>
+            <h2 id="inspectorTitle">页面属性</h2>
+          </div>
+          <button class="text-button" id="clearSelectionButton" type="button" hidden>取消选择</button>
+        </div>
+        <div class="inspector-scroll" id="inspectorScroll">
+          <section class="inspector-section page-inspector" id="pageInspector">
+            <label class="field-label" for="pageLabelInput">页面名称</label>
+            <input class="text-input" id="pageLabelInput" type="text" maxlength="80" placeholder="例如：市场机会">
+            <label class="field-label" for="pageBackgroundInput">页面背景</label>
+            <div class="color-field"><input id="pageBackgroundInput" type="color" value="#ffffff"><span id="pageBackgroundValue">#FFFFFF</span></div>
+            <div class="page-actions-grid">
+              <button class="button button-small" id="duplicatePageButton" type="button">复制页面</button>
+              <button class="button button-small" id="deletePageButton" type="button">删除页面</button>
+              <button class="button button-small" id="moveSlideUpButton" type="button">↑ 上移</button>
+              <button class="button button-small" id="moveSlideDownButton" type="button">↓ 下移</button>
+            </div>
+            <div class="section-note">页面尺寸固定为 1920 × 1080（16:9）。</div>
+          </section>
+
+          <section class="inspector-section element-inspector" id="elementInspector" hidden>
+            <div class="selected-element-chip"><span class="selection-chip-dot"></span><span id="selectedElementLabel">元素</span></div>
+            <label class="field-label" for="elementTextInput">文字内容</label>
+            <textarea class="text-area" id="elementTextInput" rows="4" placeholder="双击画布文字即可编辑"></textarea>
+            <div class="field-row">
+              <div class="field field-grow"><label class="field-label" for="fontFamilyInput">字体</label><select class="text-input" id="fontFamilyInput"><option>Aptos</option><option>Arial</option><option>Helvetica</option><option>Georgia</option><option>Times New Roman</option><option>Microsoft YaHei</option><option>SimSun</option></select></div>
+              <div class="field field-small"><label class="field-label" for="fontSizeInput">字号</label><input class="text-input" id="fontSizeInput" type="number" min="8" max="240" step="1"></div>
+            </div>
+            <div class="field-row">
+              <div class="field field-grow"><label class="field-label" for="textColorInput">文字颜色</label><div class="color-field"><input id="textColorInput" type="color" value="#172033"><span id="textColorValue">#172033</span></div></div>
+              <div class="field field-small"><label class="field-label" for="fontWeightInput">字重</label><select class="text-input" id="fontWeightInput"><option value="400">常规</option><option value="500">中等</option><option value="600">半粗</option><option value="700">粗体</option><option value="800">特粗</option></select></div>
+            </div>
+            <div class="field-row">
+              <div class="field field-grow"><label class="field-label" for="textAlignInput">对齐</label><select class="text-input" id="textAlignInput"><option value="left">左对齐</option><option value="center">居中</option><option value="right">右对齐</option><option value="justify">两端对齐</option></select></div>
+              <div class="field field-small"><label class="field-label" for="lineHeightInput">行高</label><input class="text-input" id="lineHeightInput" type="number" min="0.8" max="3" step="0.05"></div>
+            </div>
+            <div class="property-divider"></div>
+            <div class="property-heading">布局</div>
+            <div class="field-grid four-fields">
+              <div class="field"><label class="field-label" for="elementXInput">X</label><input class="text-input" id="elementXInput" type="number" step="1"></div>
+              <div class="field"><label class="field-label" for="elementYInput">Y</label><input class="text-input" id="elementYInput" type="number" step="1"></div>
+              <div class="field"><label class="field-label" for="elementWInput">宽</label><input class="text-input" id="elementWInput" type="number" min="24" step="1"></div>
+              <div class="field"><label class="field-label" for="elementHInput">高</label><input class="text-input" id="elementHInput" type="number" min="24" step="1"></div>
+            </div>
+            <div class="field-row align-actions">
+              <button class="button button-small" id="alignLeftButton" type="button">左对齐</button>
+              <button class="button button-small" id="alignCenterButton" type="button">水平居中</button>
+              <button class="button button-small" id="alignTopButton" type="button">顶端对齐</button>
+            </div>
+            <div class="property-divider"></div>
+            <div class="property-heading">图片</div>
+            <label class="upload-button" for="replaceImageInput"><span>＋</span> 选择本地图片替换</label>
+            <input class="visually-hidden" id="replaceImageInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml">
+            <div class="section-note">图片会转换为 data URL 写入当前项目，不会上传。</div>
+          </section>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <input class="visually-hidden" id="htmlFileInput" type="file" accept=".html,.htm,text/html">
+  <input class="visually-hidden" id="projectFileInput" type="file" accept=".pptdlab.json,application/json,.json">
+
+  <div class="modal-backdrop" id="importModal" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="importModalTitle">
+      <div class="modal-header"><div><span class="eyebrow-label">IMPORT</span><h2 id="importModalTitle">粘贴结构化 HTML</h2></div><button class="icon-button modal-close" data-close-modal="importModal" type="button" aria-label="关闭">×</button></div>
+      <p class="modal-intro">从 LorealGPT 复制完整 HTML 粘贴到这里。导入前会移除脚本、外部资源和事件属性，并列出处理警告。</p>
+      <textarea class="code-area" id="htmlInput" spellcheck="false" placeholder="<!doctype html>\n<html>\n  ...\n</html>"></textarea>
+      <div class="modal-footer"><span class="modal-status" id="importStatus"></span><button class="button button-ghost" data-close-modal="importModal" type="button">取消</button><button class="button button-primary" id="sanitizeImportButton" type="button">清洗并载入</button></div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="aiModal" hidden>
+    <section class="modal modal-large" role="dialog" aria-modal="true" aria-labelledby="aiModalTitle">
+      <div class="modal-header"><div><span class="eyebrow-label">LOREALGPT FLOW</span><h2 id="aiModalTitle">用 LorealGPT 生成 HTML PPT</h2></div><button class="icon-button modal-close" data-close-modal="aiModal" type="button" aria-label="关闭">×</button></div>
+      <p class="modal-intro">工作台不连接公司 AI。先在这里生成提示词，再手工复制到 LorealGPT；最后把返回的 HTML 粘贴回来。</p>
+      <div class="ai-steps" role="tablist" aria-label="生成步骤">
+        <button class="ai-step is-active" data-ai-step="1" type="button"><span>1</span>需求</button><span class="step-line"></span><button class="ai-step" data-ai-step="2" type="button"><span>2</span>大纲提示词</button><span class="step-line"></span><button class="ai-step" data-ai-step="3" type="button"><span>3</span>HTML 提示词</button><span class="step-line"></span><button class="ai-step" data-ai-step="4" type="button"><span>4</span>载入结果</button>
+      </div>
+      <div class="ai-pane" data-ai-pane="1">
+        <div class="field-grid ai-fields">
+          <div class="field field-span-2"><label class="field-label" for="aiTopicInput">主题 / 需要解决的问题</label><input class="text-input" id="aiTopicInput" placeholder="例如：新品上市季度复盘"></div>
+          <div class="field"><label class="field-label" for="aiAudienceInput">受众</label><input class="text-input" id="aiAudienceInput" placeholder="例如：管理层"></div>
+          <div class="field"><label class="field-label" for="aiDurationInput">演讲时长</label><input class="text-input" id="aiDurationInput" placeholder="例如：15 分钟"></div>
+          <div class="field"><label class="field-label" for="aiPagesInput">页数</label><input class="text-input" id="aiPagesInput" type="number" min="1" max="40" value="8"></div>
+          <div class="field"><label class="field-label" for="aiLanguageInput">语言</label><select class="text-input" id="aiLanguageInput"><option>中文</option><option>中英双语</option><option>英文</option></select></div>
+          <div class="field"><label class="field-label" for="aiUseInput">用途</label><input class="text-input" id="aiUseInput" placeholder="例如：季度业务汇报"></div>
+          <div class="field"><label class="field-label" for="aiStyleInput">视觉风格</label><input class="text-input" id="aiStyleInput" placeholder="例如：品牌感、克制、留白"></div>
+          <div class="field field-span-2"><label class="field-label" for="aiMaterialsInput">已有材料 / 关键事实</label><textarea class="text-area" id="aiMaterialsInput" rows="3" placeholder="可以粘贴不敏感的材料摘要"></textarea></div>
+        </div>
+        <div class="ai-pane-footer"><span class="section-note">敏感材料请按公司政策处理；此页面不会自动发送内容。</span><button class="button button-primary" id="generateOutlineButton" type="button">生成第 1 步提示词 →</button></div>
+      </div>
+      <div class="ai-pane" data-ai-pane="2" hidden>
+        <div class="instruction-card"><strong>把下面提示词复制到 LorealGPT</strong><span>完成后，把它生成的“大纲”粘贴到下方，再进入下一步。</span></div>
+        <textarea class="code-area prompt-area" id="outlinePromptOutput" readonly></textarea>
+        <div class="prompt-actions"><button class="button button-outline" id="copyOutlinePromptButton" type="button">复制提示词</button><span class="copy-status" id="outlineCopyStatus"></span></div>
+        <label class="field-label" for="outlineInput">粘贴 LorealGPT 返回的大纲（可选）</label><textarea class="text-area" id="outlineInput" rows="5" placeholder="在这里粘贴大纲文本"></textarea>
+        <div class="ai-pane-footer"><button class="button button-ghost" data-ai-step="1" type="button">← 返回修改需求</button><button class="button button-primary" id="generateHtmlPromptButton" type="button">生成第 2 步提示词 →</button></div>
+      </div>
+      <div class="ai-pane" data-ai-pane="3" hidden>
+        <div class="instruction-card"><strong>把结构化 HTML 提示词复制到 LorealGPT</strong><span>要求它只返回完整 HTML，不要 Markdown 代码围栏。</span></div>
+        <textarea class="code-area prompt-area" id="htmlPromptOutput" readonly></textarea>
+        <div class="prompt-actions"><button class="button button-outline" id="copyHtmlPromptButton" type="button">复制提示词</button><span class="copy-status" id="htmlCopyStatus"></span></div>
+        <div class="ai-pane-footer"><button class="button button-ghost" data-ai-step="2" type="button">← 返回大纲</button><button class="button button-primary" data-ai-step="4" type="button">我已拿到 HTML →</button></div>
+      </div>
+      <div class="ai-pane" data-ai-pane="4" hidden>
+        <div class="instruction-card"><strong>粘贴 LorealGPT 返回的完整 HTML</strong><span>清洗后只保留结构化幻灯片与静态样式，页面内容仍只在当前浏览器内存中。</span></div>
+        <textarea class="code-area" id="aiHtmlInput" spellcheck="false" placeholder="<!doctype html> ..."></textarea>
+        <div class="ai-pane-footer"><button class="button button-ghost" data-ai-step="3" type="button">← 返回提示词</button><button class="button button-primary" id="loadAiHtmlButton" type="button">清洗并载入演示文稿</button></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="privacyModal" hidden>
+    <section class="modal modal-small" role="dialog" aria-modal="true" aria-labelledby="privacyModalTitle">
+      <div class="modal-header"><div><span class="eyebrow-label">PRIVACY</span><h2 id="privacyModalTitle">本地处理边界</h2></div><button class="icon-button modal-close" data-close-modal="privacyModal" type="button" aria-label="关闭">×</button></div>
+      <div class="privacy-copy"><p>这个工具是静态网页。导入的 HTML、编辑结果和本地图片只保留在当前浏览器内存中，只有你点击“保存项目”或导出按钮时，文件才会下载到本机。</p><p>工具不包含上传接口、后端、遥测、登录、自动保存或对外部资源的主动下载。公司 AI 由你在 LorealGPT 页面中手工使用。</p><p class="privacy-callout">发布到 GitHub Pages 的只是工具框架和本地依赖，不包含你的项目内容。</p></div>
+      <div class="modal-footer"><button class="button button-primary" data-close-modal="privacyModal" type="button">知道了</button></div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="vendor/html-to-image.js" defer></script>
+  <script src="vendor/pptxgen.bundle.js" defer></script>
+  <script src="sanitizer.js" defer></script>
+  <script src="project-io.js" defer></script>
+  <script src="exporter.js" defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
