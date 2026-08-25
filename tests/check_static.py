@@ -122,7 +122,7 @@ def main() -> int:
         fail("duplicated pages do not receive a fresh DOM id")
     if 'id="slide-01" data-slide-id="slide-01"' not in app_source:
         fail("LorealGPT prompt does not require matching DOM and project slide ids")
-    for marker in ["88–120px", "64–88px", "40–52px", "2px≈1pt", "时间线必须使用统一"]:
+    for marker in ["标准档：封面主标题 84–96px", "普通页标题 58–68px", "正文 30–36px", "一般不要低于 22px", "不能把所有文字按同一倍率全局放大", "双栏布局必须显式划分左右列", "至少保留 80px gutter", "版式自检"]:
         if marker not in app_source:
             fail(f"LorealGPT prompt is missing typography/layout guidance: {marker}")
     for marker in ["MOVE_THRESHOLD", "offsetParentPosition", "Math.hypot(dx, dy)", 'event.detail > 1', 'target.children.length > 0 || !target.textContent.trim()']:
