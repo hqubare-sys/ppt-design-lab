@@ -198,16 +198,16 @@
     /* Page 3: the design-system map shown on the home page. */
     .system-slide { background:var(--paper); }
     .system-slide::after { content:""; position:absolute; right:-190px; top:-230px; width:530px; height:530px; border-radius:50%; background:#ffe7ed; opacity:.62; }
-    .system-kicker { position:absolute; left:120px; top:52px; color:var(--accent); font-size:22px; font-weight:800; letter-spacing:3px; }
-    .system-title { position:absolute; left:120px; top:100px; width:1150px; margin:0; color:var(--ink); font-size:58px; line-height:1.1; }
-    .system-intro { position:absolute; left:125px; top:168px; width:1450px; margin:0; color:var(--muted); font-size:25px; line-height:1.4; }
-    .system-callout { position:absolute; right:120px; top:52px; z-index:1; padding:13px 26px; border:1px solid #f1b7c5; border-radius:999px; color:var(--accent-dark); background:#fff9fa; font-size:20px; font-weight:800; line-height:1; }
+    .system-kicker { position:absolute; left:72px; top:52px; color:var(--accent); font-size:22px; font-weight:800; letter-spacing:3px; }
+    .system-title { position:absolute; left:72px; top:100px; width:1150px; margin:0; color:var(--ink); font-size:58px; line-height:1.1; }
+    .system-intro { position:absolute; left:77px; top:168px; width:1450px; margin:0; color:var(--muted); font-size:25px; line-height:1.4; }
+    .system-callout { position:absolute; right:91px; top:52px; z-index:1; padding:13px 26px; border:1px solid #f1b7c5; border-radius:999px; color:var(--accent-dark); background:#fff9fa; font-size:20px; font-weight:800; line-height:1; }
     .system-panel { position:absolute; z-index:1; border:1px solid #f0dce2; border-radius:24px; background:#fff; box-shadow:0 12px 30px rgba(184,47,81,.07); }
     .panel-heading { display:block; margin:0; color:var(--ink); font-size:27px; line-height:1.1; }
     .panel-note { display:block; margin-top:6px; color:var(--muted); font-size:18px; line-height:1.2; }
-    .themes-panel { left:120px; top:250px; width:430px; height:570px; padding:27px 25px; }
+    .themes-panel { left:72px; top:225px; width:405px; height:600px; padding:27px 25px; }
     .theme-stack { display:grid; gap:14px; margin-top:20px; }
-    .theme-card { position:relative; height:151px; padding:16px 18px; overflow:hidden; border-radius:18px; box-shadow:0 8px 20px rgba(23,32,51,.08); }
+    .theme-card { position:relative; height:145px; padding:16px 18px; overflow:hidden; border-radius:18px; box-shadow:0 8px 20px rgba(23,32,51,.08); }
     .theme-card::before { content:""; position:absolute; left:0; top:0; right:0; height:7px; border-radius:18px 18px 0 0; }
     .theme-card.consulting { background:var(--blue-soft); }
     .theme-card.consulting::before { background:var(--blue); }
@@ -218,12 +218,12 @@
     .theme-card strong { display:block; color:var(--ink); font-size:27px; line-height:1.1; }
     .theme-card span { display:block; margin-top:5px; color:var(--muted); font-size:17px; line-height:1.2; }
     .theme-mini { position:absolute; left:17px; right:17px; bottom:13px; height:61px; padding:10px 12px; border-radius:12px; background:rgba(255,255,255,.82); }
-    .theme-mini-lines { display:block; width:44%; height:7px; border-radius:99px; background:var(--blue); }
-    .theme-mini-lines::after { content:""; display:block; width:67%; height:7px; margin-top:11px; border-radius:99px; background:currentColor; opacity:.78; }
+    .theme-mini-lines { display:block; width:43%; height:7px; margin-top:0 !important; border-radius:99px; background:var(--blue); }
+    .theme-mini-lines::after { content:""; display:block; width:67%; height:7px; margin-top:10px; border-radius:99px; background:currentColor; opacity:.78; }
     .consulting .theme-mini-lines { color:#3d8a83; }
     .black-gold .theme-mini-lines { width:49%; background:#d3ad50; color:#b4852a; }
     .warm-rice .theme-mini-lines { width:48%; background:#b85c43; color:#d18c68; }
-    .theme-mini-bars { position:absolute; right:13px; bottom:10px; display:flex; align-items:end; gap:5px; height:31px; }
+    .theme-mini-bars { position:absolute; left:13px; right:auto; bottom:10px; display:flex; align-items:end; gap:5px; height:31px; margin-top:0 !important; }
     .theme-mini-bars i { display:block; width:13px; border-radius:3px 3px 0 0; background:#3d8a83; }
     .theme-mini-bars i:nth-child(1) { height:12px; }
     .theme-mini-bars i:nth-child(2) { height:22px; }
@@ -231,36 +231,50 @@
     .theme-mini-bars i:nth-child(4) { height:18px; }
     .black-gold .theme-mini-bars i { background:#d3ad50; }
     .warm-rice .theme-mini-bars i { background:#c78663; }
-    .structure-panel { left:574px; top:250px; width:750px; height:570px; padding:27px 27px; }
+    .theme-mini-kpi { position:absolute; right:12px; top:9px; display:grid; gap:4px; width:78px; margin-top:0 !important; color:transparent !important; font-size:0 !important; }
+    .theme-mini-kpi i { display:block; height:20px; border-radius:5px; color:var(--blue); background:#edf3f7; font-size:12px; font-style:normal; font-weight:800; line-height:20px; text-align:center; }
+    .black-gold .theme-mini-kpi i { color:#e8ce82; background:#433d2f; }
+    .warm-rice .theme-mini-kpi i { color:#9f593f; background:#f2dfcf; }
+    .structure-panel { left:501px; top:225px; width:734px; height:600px; padding:27px 27px; }
     .structure-list { display:grid; grid-template-columns:1fr 1fr; column-gap:14px; row-gap:10px; margin-top:19px; }
-    .structure-item { display:flex; align-items:center; min-height:83px; padding:10px; border:1px solid #f0e8ea; border-radius:14px; color:var(--ink); background:#fff; }
+    .structure-item { display:flex; align-items:center; min-height:80px; padding:10px; border:1px solid #f0e8ea; border-radius:14px; color:var(--ink); background:#fff; }
     .structure-item b { display:flex; align-items:center; justify-content:center; flex:0 0 91px; width:91px; height:56px; margin-right:11px; border:1px solid #e8dfe2; border-radius:8px; background:#fbfcfd; color:transparent; font-size:0; position:relative; overflow:hidden; }
     .structure-item b::before { content:""; position:absolute; left:7px; right:7px; top:7px; height:7px; border-radius:2px; background:var(--accent); }
     .structure-item b::after { content:""; position:absolute; left:8px; right:8px; bottom:8px; height:27px; border-radius:3px; background:linear-gradient(90deg,#dce4ef 0 32%,transparent 32% 38%,#69a9a0 38% 68%,transparent 68% 74%,#dce4ef 74%); }
     .structure-item:nth-child(2n) b::before { background:var(--blue); }
     .structure-item:nth-child(3n) b::before { background:#3d8a83; }
+    .structure-item:nth-child(1) b::after { background:#dce4ef; }
+    .structure-item:nth-child(2) b::after { background:linear-gradient(90deg,#dce4ef 0 62%,#69a9a0 62%); }
+    .structure-item:nth-child(3) b::after { background:linear-gradient(90deg,#dce4ef 0 47%,transparent 47% 53%,#dce4ef 53% 100%),linear-gradient(90deg,#69a9a0 0 47%,transparent 47% 53%,#dce4ef 53% 100%); background-size:100% 43%,100% 43%; background-position:0 0,0 100%; background-repeat:no-repeat; }
+    .structure-item:nth-child(4) b::after { background:linear-gradient(90deg,#69a9a0 0 62%,#dce4ef 62%); }
+    .structure-item:nth-child(5) b::after { background:linear-gradient(90deg,#dce4ef 0 29%,transparent 29% 36%,#d45873 36% 64%,transparent 64% 71%,#dce4ef 71%); }
+    .structure-item:nth-child(6) b::after { background:linear-gradient(90deg,#dce4ef 0 47%,transparent 47% 53%,#dce4ef 53% 100%),linear-gradient(90deg,#dce4ef 0 47%,transparent 47% 53%,#d45873 53% 100%); background-size:100% 43%,100% 43%; background-position:0 0,0 100%; background-repeat:no-repeat; }
+    .structure-item:nth-child(7) b::after { background:linear-gradient(90deg,#d45873 0 22%,#dce4ef 22% 44%,#69a9a0 44% 72%,#dce4ef 72%); }
+    .structure-item:nth-child(8) b::after { background:linear-gradient(90deg,#dce4ef 0 22%,#254d7d 22% 47%,#dce4ef 47% 72%,#69a9a0 72%); }
+    .structure-item:nth-child(9) b::after { background:linear-gradient(90deg,#d45873 0 30%,#dce4ef 30% 64%,#69a9a0 64%); }
+    .structure-item:nth-child(10) b::after { background:#d45873; }
     .structure-item strong { display:block; font-size:20px; line-height:1.12; }
     .structure-item span { display:block; margin-top:4px; color:var(--muted); font-size:16px; line-height:1.12; }
-    .module-panel { left:1348px; top:250px; width:452px; height:300px; padding:26px 24px; }
+    .module-panel { left:1259px; top:225px; width:552px; height:320px; padding:26px 24px; }
     .module-grid { display:grid; gap:6px; margin-top:15px; }
     .module-group { min-height:37px; padding:6px 10px; border-radius:11px; background:#f8fafc; }
     .module-group strong { display:block; color:var(--accent-dark); font-size:17px; line-height:1.1; }
     .module-chips { display:flex; flex-wrap:wrap; gap:5px; margin-top:4px; }
     .module-chips span { display:inline-block; padding:3px 7px; border:1px solid #e4e9ef; border-radius:999px; color:var(--muted); background:#fff; font-size:14px; line-height:1; }
-    .blueprint-panel { left:1348px; top:565px; width:452px; height:255px; padding:22px 24px; border-color:#172033; background:var(--ink); box-shadow:0 12px 30px rgba(23,32,51,.14); }
+    .blueprint-panel { left:1259px; top:565px; width:552px; height:260px; padding:20px 24px; border-color:#172033; background:var(--ink); box-shadow:0 12px 30px rgba(23,32,51,.14); }
     .blueprint-panel .panel-heading { color:#fff; }
     .blueprint-panel .panel-note { color:#c6cedd; }
-    .blueprint-code { margin-top:10px; padding:9px 12px; border:1px solid rgba(255,255,255,.12); border-radius:12px; background:#101725; color:#f6cbd5; font-family:"SFMono-Regular","Consolas","Liberation Mono",monospace; font-size:13px; line-height:1.28; }
+    .blueprint-code { margin-top:10px; padding:8px 12px; border:1px solid rgba(255,255,255,.12); border-radius:12px; background:#101725; color:#f6cbd5; font-family:"SFMono-Regular","Consolas","Liberation Mono",monospace; font-size:12px; line-height:1.25; }
     .blueprint-code span { display:block; }
     .blueprint-code b { color:#f4ce6b; font-weight:700; }
-    .blueprint-free { display:block; margin-top:8px; padding:7px 10px; border-radius:9px; color:#ffd7df; background:rgba(232,62,101,.23); font-size:14px; line-height:1.2; }
-    .system-pipeline { position:absolute; left:120px; top:850px; z-index:1; display:grid; grid-template-columns:1fr 34px 1fr 34px 1fr 34px 1fr; align-items:center; width:1680px; height:155px; padding:20px 25px; border:1px solid #f0dce2; border-radius:24px; background:rgba(255,255,255,.9); box-shadow:0 12px 30px rgba(184,47,81,.06); }
+    .blueprint-free { display:block; margin-top:8px; padding:6px 10px; border-radius:9px; color:#ffd7df; background:rgba(232,62,101,.23); font-size:13px; line-height:1.2; }
+    .system-pipeline { position:absolute; left:72px; top:850px; z-index:1; display:grid; grid-template-columns:1fr 34px 1fr 34px 1fr 34px 1fr; align-items:center; width:1739px; height:155px; padding:20px 25px; border:1px solid #f0dce2; border-radius:24px; background:rgba(255,255,255,.9); box-shadow:0 12px 30px rgba(184,47,81,.06); }
     .pipeline-step { display:block; min-width:0; height:113px; padding:15px 16px; border:1px solid #f1e3e6; border-radius:16px; background:#fff; box-shadow:0 8px 18px rgba(23,32,51,.05); }
     .pipeline-step b { display:flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:50%; background:#fde0e7; color:var(--accent-dark); font-size:17px; }
     .pipeline-step strong { display:block; margin-top:10px; color:var(--ink); font-size:21px; line-height:1.1; }
     .pipeline-step span { display:block; margin-top:6px; color:var(--muted); font-size:16px; line-height:1.2; }
     .pipeline-arrow { color:var(--accent); font-size:27px; font-style:normal; text-align:center; }
-    .system-slide .slide-footer { left:auto; right:120px; bottom:15px; font-size:18px; }
+    .system-slide .slide-footer { left:auto; right:91px; bottom:15px; font-size:18px; }
   </style>
 </head>
 <body>
@@ -299,17 +313,17 @@
           <div class="theme-card consulting">
             <strong>咨询蓝</strong>
             <span>理性、清晰、数据驱动</span>
-            <div class="theme-mini"><span class="theme-mini-lines"></span><span class="theme-mini-bars"><i></i><i></i><i></i><i></i></span></div>
+            <div class="theme-mini"><span class="theme-mini-lines"></span><span class="theme-mini-bars"><i></i><i></i><i></i><i></i></span><span class="theme-mini-kpi"><i>72%</i><i>+18%</i></span></div>
           </div>
           <div class="theme-card black-gold">
             <strong>黑金</strong>
             <span>高级、权威、管理层表达</span>
-            <div class="theme-mini"><span class="theme-mini-lines"></span><span class="theme-mini-bars"><i></i><i></i><i></i><i></i></span></div>
+            <div class="theme-mini"><span class="theme-mini-lines"></span><span class="theme-mini-bars"><i></i><i></i><i></i><i></i></span><span class="theme-mini-kpi"><i>3.2B</i><i>TOP 1</i></span></div>
           </div>
           <div class="theme-card warm-rice">
             <strong>暖米</strong>
             <span>温暖、编辑感、叙事友好</span>
-            <div class="theme-mini"><span class="theme-mini-lines"></span><span class="theme-mini-bars"><i></i><i></i><i></i><i></i></span></div>
+            <div class="theme-mini"><span class="theme-mini-lines"></span><span class="theme-mini-bars"><i></i><i></i><i></i><i></i></span><span class="theme-mini-kpi"><i>Q3</i><i>NEXT</i></span></div>
           </div>
         </div>
       </div>
@@ -319,14 +333,14 @@
         <span class="panel-note">构图骨架可自由组合</span>
         <div class="structure-list">
           <div class="structure-item"><b>01</b><div><strong>核心结论</strong><span>一句洞察＋关键证据</span></div></div>
-          <div class="structure-item"><b>06</b><div><strong>矩阵与组合</strong><span>客户、产品、优先级</span></div></div>
           <div class="structure-item"><b>02</b><div><strong>主分析＋证据</strong><span>主视觉＋排名或指标</span></div></div>
-          <div class="structure-item"><b>07</b><div><strong>流程与方法</strong><span>步骤、业务链路、机制</span></div></div>
           <div class="structure-item"><b>03</b><div><strong>数据仪表盘</strong><span>KPI＋趋势＋结构</span></div></div>
-          <div class="structure-item"><b>08</b><div><strong>路线图</strong><span>阶段、里程碑、计划</span></div></div>
           <div class="structure-item"><b>04</b><div><strong>趋势＋原因</strong><span>变化、曲线、驱动因素</span></div></div>
-          <div class="structure-item"><b>09</b><div><strong>问题—原因—行动</strong><span>复盘与改善闭环</span></div></div>
           <div class="structure-item"><b>05</b><div><strong>对比与选择</strong><span>方案、时机、目标对比</span></div></div>
+          <div class="structure-item"><b>06</b><div><strong>矩阵与组合</strong><span>客户、产品、优先级</span></div></div>
+          <div class="structure-item"><b>07</b><div><strong>流程与方法</strong><span>步骤、业务链路、机制</span></div></div>
+          <div class="structure-item"><b>08</b><div><strong>路线图</strong><span>阶段、里程碑、计划</span></div></div>
+          <div class="structure-item"><b>09</b><div><strong>问题—原因—行动</strong><span>复盘与改善闭环</span></div></div>
           <div class="structure-item"><b>10</b><div><strong>总结与决策</strong><span>发现、建议、责任与时间</span></div></div>
         </div>
       </div>
@@ -335,10 +349,10 @@
         <strong class="panel-heading">03 · 视觉模块库</strong>
         <span class="panel-note">25+ 视觉模块 · 第一批可按内容组合</span>
         <div class="module-grid">
-          <div class="module-group"><strong>数据分析</strong><div class="module-chips"><span>大数字</span><span>折线图</span><span>柱状图</span><span>环形图</span><span>排名表</span></div></div>
-          <div class="module-group"><strong>逻辑表达</strong><div class="module-chips"><span>战略支柱</span><span>问题树</span><span>因果链</span><span>风险矩阵</span></div></div>
-          <div class="module-group"><strong>项目管理</strong><div class="module-chips"><span>时间线</span><span>路线图</span><span>里程碑</span><span>行动计划</span></div></div>
-          <div class="module-group"><strong>叙事与品牌</strong><div class="module-chips"><span>图片洞察</span><span>案例卡片</span><span>前后对比</span><span>结论条</span></div></div>
+          <div class="module-group"><strong>数据分析</strong><div class="module-chips"><span>大数字</span><span>折线图</span><span>柱状图</span><span>环形图</span><span>瀑布图</span><span>排名表</span><span>气泡矩阵</span></div></div>
+          <div class="module-group"><strong>逻辑表达</strong><div class="module-chips"><span>战略支柱</span><span>问题树</span><span>因果链</span><span>因果瀑</span><span>风险矩阵</span></div></div>
+          <div class="module-group"><strong>项目管理</strong><div class="module-chips"><span>时间线</span><span>路线图</span><span>里程碑</span><span>角色分工</span><span>行动计划</span></div></div>
+          <div class="module-group"><strong>叙事与品牌</strong><div class="module-chips"><span>图片洞察</span><span>案例卡片</span><span>前后对比</span><span>结论条</span><span>章节页</span></div></div>
         </div>
       </div>
 
@@ -346,14 +360,15 @@
         <strong class="panel-heading">04 · 页面蓝图格式</strong>
         <span class="panel-note">LorealGPT 一次返回；特殊表达返回 free_html</span>
         <div class="blueprint-code">
-          <span><b>page_goal:</b> 说明业务目标</span>
-          <span><b>headline:</b> 一句话结论</span>
-          <span><b>structure:</b> 页面结构原型</span>
-          <span><b>main_visual:</b> 主视觉模块</span>
-          <span><b>support:</b> 证据与辅助模块</span>
-          <span><b>takeaway:</b> 行动与决策</span>
+          <span><b>page_goal:</b> 说明增长转向经销商驱动</span>
+          <span><b>headline:</b> 经销商贡献 72% 销售额</span>
+          <span><b>structure:</b> 主分析＋辅助证据</span>
+          <span><b>main_visual:</b> 客户组合＋渠道矩阵</span>
+          <span><b>support:</b> Top5 表＋环形图＋大数字</span>
+          <span><b>takeaway:</b> 业务模式正在重塑</span>
+          <span><b>#</b> 数据、文字、注释与配色一并返回</span>
         </div>
-        <span class="blueprint-free">无法用标准模块表达时：同时返回 free_html</span>
+        <span class="blueprint-free">如需更特殊表达：同时返回 free_html，工具直接导入并继续编辑</span>
       </div>
 
       <div class="system-pipeline">
