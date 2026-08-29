@@ -168,74 +168,99 @@
     .intro-start { position:absolute; right:170px; bottom:108px; color:var(--accent-dark); font-size:25px; font-weight:800; z-index:1; }
     .intro-footer { position:absolute; left:140px; bottom:82px; color:var(--muted); font-size:24px; }
 
-    /* Page 2: the local quick-start path. */
-    .workflow-slide { background:var(--paper-cool); }
-    .workflow-slide::before { content:""; position:absolute; left:-230px; top:-300px; width:620px; height:620px; border-radius:50%; background:#e9eef7; opacity:.78; }
-    .workflow-kicker { position:absolute; left:120px; top:66px; color:var(--blue); font-size:23px; font-weight:800; letter-spacing:3px; }
+    /* Page 2: the local quick-start path, using the same warm brand system as page 1. */
+    .workflow-slide { background:var(--paper); }
+    .workflow-slide::before { content:""; position:absolute; left:-230px; top:-300px; width:620px; height:620px; border-radius:50%; background:#ffe7ed; opacity:.74; }
+    .workflow-slide::after { content:""; position:absolute; right:-180px; bottom:-260px; width:600px; height:600px; border-radius:50%; background:#f9e2e8; opacity:.72; }
+    .workflow-kicker { position:absolute; left:120px; top:66px; color:var(--accent-dark); font-size:23px; font-weight:800; letter-spacing:3px; }
     .workflow-title { position:absolute; left:120px; top:120px; width:1250px; margin:0; color:var(--ink); font-size:64px; line-height:1.08; letter-spacing:-1px; }
     .workflow-lead { position:absolute; left:125px; top:206px; width:1450px; margin:0; color:var(--muted); font-size:30px; line-height:1.4; }
     .workflow-grid { position:absolute; left:120px; top:335px; display:grid; grid-template-columns:repeat(4,1fr); gap:28px; width:1680px; height:445px; }
-    .workflow-step { position:relative; padding:31px 30px 27px; border:1px solid #d6deea; border-radius:26px; background:#fff; box-shadow:0 16px 38px rgba(36,60,96,.09); }
-    .workflow-step::after { content:""; position:absolute; left:30px; right:30px; bottom:84px; height:1px; background:#e5eaf2; }
-    .workflow-step:nth-child(1) { border-top:8px solid var(--accent); }
-    .workflow-step:nth-child(2) { border-top:8px solid var(--blue); }
-    .workflow-step:nth-child(3) { border-top:8px solid #3d8a83; }
-    .workflow-step:nth-child(4) { border-top:8px solid var(--gold); }
-    .workflow-number { display:flex; align-items:center; justify-content:center; width:58px; height:58px; border-radius:50%; background:var(--ink); color:#fff; font-size:24px; font-weight:800; }
-    .workflow-step:nth-child(1) .workflow-number { background:var(--accent); }
-    .workflow-step:nth-child(2) .workflow-number { background:var(--blue); }
+    .workflow-step { position:relative; padding:31px 30px 27px; border:1px solid #f0cbd6; border-top:8px solid var(--accent); border-radius:26px; background:rgba(255,255,255,.96); box-shadow:0 16px 38px rgba(184,47,81,.09); }
+    .workflow-step::after { content:""; position:absolute; left:30px; right:30px; bottom:84px; height:1px; background:#f2dfe4; }
+    .workflow-number { display:flex; align-items:center; justify-content:center; width:58px; height:58px; border-radius:50%; background:var(--accent); color:#fff; font-size:24px; font-weight:800; }
+    .workflow-step:nth-child(2) .workflow-number { background:#c85b78; }
     .workflow-step:nth-child(3) .workflow-number { background:#3d8a83; }
     .workflow-step:nth-child(4) .workflow-number { background:var(--gold); }
-    .workflow-step h3 { margin:25px 0 0; font-size:32px; line-height:1.18; }
+    .workflow-step h3 { margin:25px 0 0; color:var(--ink); font-size:32px; line-height:1.18; }
     .workflow-copy { display:block; margin-top:19px; color:var(--muted); font-size:23px; line-height:1.5; }
-    .workflow-tag { position:absolute; left:30px; bottom:27px; color:var(--ink); font-size:22px; font-weight:800; }
-    .workflow-arrow { position:absolute; top:548px; width:40px; color:#aeb9ca; font-size:34px; font-weight:800; text-align:center; }
+    .workflow-tag { position:absolute; left:30px; bottom:27px; color:var(--accent-dark); font-size:22px; font-weight:800; }
+    .workflow-arrow { position:absolute; top:548px; width:40px; color:#e79aae; font-size:30px; font-weight:800; text-align:center; }
     .workflow-arrow-1 { left:524px; }
     .workflow-arrow-2 { left:952px; }
     .workflow-arrow-3 { left:1380px; }
-    .workflow-local { position:absolute; left:120px; top:835px; display:flex; align-items:center; width:1680px; height:145px; padding:0 34px; border:1px solid #c8d4e5; border-radius:25px; background:#eef4fb; }
-    .workflow-local-title { flex:0 0 325px; color:var(--blue); font-size:25px; font-weight:800; line-height:1.3; }
+    .workflow-local { position:absolute; left:120px; top:835px; display:flex; align-items:center; width:1680px; height:145px; padding:0 34px; border:1px solid #f0cbd6; border-radius:25px; background:rgba(255,255,255,.92); box-shadow:0 12px 30px rgba(184,47,81,.06); }
+    .workflow-local-title { flex:0 0 325px; color:var(--accent-dark); font-size:25px; font-weight:800; line-height:1.3; }
     .workflow-path { flex:1; color:var(--ink); font-size:23px; line-height:1.45; }
-    .workflow-path strong { color:var(--blue); }
-    .workflow-privacy { flex:0 0 370px; padding-left:28px; border-left:1px solid #c8d4e5; color:var(--muted); font-size:22px; line-height:1.42; }
+    .workflow-path strong { color:var(--accent-dark); }
+    .workflow-privacy { flex:0 0 370px; padding-left:28px; border-left:1px solid #f0d5dd; color:var(--muted); font-size:22px; line-height:1.42; }
 
     /* Page 3: the design-system map shown on the home page. */
-    .system-slide { background:#fbfcfe; }
-    .system-kicker { position:absolute; left:120px; top:58px; color:var(--gold); font-size:22px; font-weight:800; letter-spacing:3px; }
-    .system-title { position:absolute; left:120px; top:106px; width:1200px; margin:0; color:var(--ink); font-size:58px; line-height:1.1; }
-    .system-intro { position:absolute; left:125px; top:176px; width:1680px; margin:0; color:var(--muted); font-size:25px; line-height:1.4; }
-    .theme-strip { position:absolute; left:120px; top:250px; display:grid; grid-template-columns:repeat(3,1fr); gap:24px; width:1680px; height:120px; }
-    .theme-card { position:relative; padding:23px 28px; border-radius:23px; background:#fff; box-shadow:0 10px 26px rgba(23,32,51,.08); }
-    .theme-card::before { content:""; position:absolute; left:0; top:0; bottom:0; width:8px; border-radius:23px 0 0 23px; }
+    .system-slide { background:var(--paper); }
+    .system-slide::after { content:""; position:absolute; right:-190px; top:-230px; width:530px; height:530px; border-radius:50%; background:#ffe7ed; opacity:.62; }
+    .system-kicker { position:absolute; left:120px; top:52px; color:var(--accent); font-size:22px; font-weight:800; letter-spacing:3px; }
+    .system-title { position:absolute; left:120px; top:100px; width:1150px; margin:0; color:var(--ink); font-size:58px; line-height:1.1; }
+    .system-intro { position:absolute; left:125px; top:168px; width:1450px; margin:0; color:var(--muted); font-size:25px; line-height:1.4; }
+    .system-callout { position:absolute; right:120px; top:52px; z-index:1; padding:13px 26px; border:1px solid #f1b7c5; border-radius:999px; color:var(--accent-dark); background:#fff9fa; font-size:20px; font-weight:800; line-height:1; }
+    .system-panel { position:absolute; z-index:1; border:1px solid #f0dce2; border-radius:24px; background:#fff; box-shadow:0 12px 30px rgba(184,47,81,.07); }
+    .panel-heading { display:block; margin:0; color:var(--ink); font-size:27px; line-height:1.1; }
+    .panel-note { display:block; margin-top:6px; color:var(--muted); font-size:18px; line-height:1.2; }
+    .themes-panel { left:120px; top:250px; width:430px; height:570px; padding:27px 25px; }
+    .theme-stack { display:grid; gap:14px; margin-top:20px; }
+    .theme-card { position:relative; height:151px; padding:16px 18px; overflow:hidden; border-radius:18px; box-shadow:0 8px 20px rgba(23,32,51,.08); }
+    .theme-card::before { content:""; position:absolute; left:0; top:0; right:0; height:7px; border-radius:18px 18px 0 0; }
     .theme-card.consulting { background:var(--blue-soft); }
     .theme-card.consulting::before { background:var(--blue); }
     .theme-card.black-gold { background:#f3f1ed; }
     .theme-card.black-gold::before { background:#1d1d1f; }
     .theme-card.warm-rice { background:var(--rice-soft); }
     .theme-card.warm-rice::before { background:var(--rice); }
-    .theme-card strong { display:block; font-size:29px; line-height:1.1; }
-    .theme-card span { display:block; margin-top:9px; color:var(--muted); font-size:21px; line-height:1.2; }
-    .system-panel { position:absolute; border:1px solid #dce3ed; border-radius:24px; background:#fff; box-shadow:0 12px 30px rgba(23,32,51,.06); }
-    .panel-heading { display:block; margin:0; color:var(--ink); font-size:27px; line-height:1.1; }
-    .panel-note { display:block; margin-top:6px; color:var(--muted); font-size:19px; line-height:1.2; }
-    .structure-panel { left:120px; top:400px; width:800px; height:405px; padding:27px 31px; }
-    .structure-list { display:grid; grid-template-columns:1fr 1fr; column-gap:34px; row-gap:9px; margin-top:22px; }
-    .structure-item { display:flex; align-items:center; min-height:48px; border-bottom:1px solid #edf0f5; color:var(--ink); font-size:22px; line-height:1.2; }
-    .structure-item b { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; margin-right:11px; border-radius:50%; background:var(--gold-soft); color:var(--gold); font-size:17px; }
-    .module-panel { left:952px; top:400px; width:848px; height:200px; padding:26px 30px; }
-    .module-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px 18px; margin-top:17px; }
-    .module-group { min-height:45px; padding:9px 13px; border-radius:13px; background:#f6f8fb; }
-    .module-group strong { display:block; color:var(--blue); font-size:20px; line-height:1.1; }
-    .module-group span { display:block; margin-top:3px; color:var(--muted); font-size:18px; line-height:1.1; }
-    .blueprint-panel { left:952px; top:612px; width:848px; height:220px; padding:26px 30px; }
-    .blueprint-fields { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
-    .blueprint-field { padding:9px 14px; border:1px solid #d8e0ec; border-radius:999px; color:var(--blue); background:#f6f9fd; font-size:20px; line-height:1; }
-    .system-pipeline { position:absolute; left:120px; top:850px; display:flex; align-items:center; width:1680px; height:145px; padding:0 30px; border-radius:24px; background:var(--ink); color:#fff; }
-    .pipeline-label { flex:0 0 190px; color:#f4ce6b; font-size:23px; font-weight:800; line-height:1.25; }
-    .pipeline-step { display:flex; align-items:center; flex:1; min-width:0; }
-    .pipeline-step b { display:flex; align-items:center; justify-content:center; flex:0 0 42px; width:42px; height:42px; border-radius:50%; background:#fff; color:var(--ink); font-size:18px; }
-    .pipeline-step span { display:block; margin-left:12px; color:#fff; font-size:21px; line-height:1.3; }
-    .pipeline-arrow { flex:0 0 40px; color:#f4ce6b; font-size:28px; text-align:center; }
+    .theme-card strong { display:block; color:var(--ink); font-size:27px; line-height:1.1; }
+    .theme-card span { display:block; margin-top:5px; color:var(--muted); font-size:17px; line-height:1.2; }
+    .theme-mini { position:absolute; left:17px; right:17px; bottom:13px; height:61px; padding:10px 12px; border-radius:12px; background:rgba(255,255,255,.82); }
+    .theme-mini-lines { display:block; width:44%; height:7px; border-radius:99px; background:var(--blue); }
+    .theme-mini-lines::after { content:""; display:block; width:67%; height:7px; margin-top:11px; border-radius:99px; background:currentColor; opacity:.78; }
+    .consulting .theme-mini-lines { color:#3d8a83; }
+    .black-gold .theme-mini-lines { width:49%; background:#d3ad50; color:#b4852a; }
+    .warm-rice .theme-mini-lines { width:48%; background:#b85c43; color:#d18c68; }
+    .theme-mini-bars { position:absolute; right:13px; bottom:10px; display:flex; align-items:end; gap:5px; height:31px; }
+    .theme-mini-bars i { display:block; width:13px; border-radius:3px 3px 0 0; background:#3d8a83; }
+    .theme-mini-bars i:nth-child(1) { height:12px; }
+    .theme-mini-bars i:nth-child(2) { height:22px; }
+    .theme-mini-bars i:nth-child(3) { height:29px; }
+    .theme-mini-bars i:nth-child(4) { height:18px; }
+    .black-gold .theme-mini-bars i { background:#d3ad50; }
+    .warm-rice .theme-mini-bars i { background:#c78663; }
+    .structure-panel { left:574px; top:250px; width:750px; height:570px; padding:27px 27px; }
+    .structure-list { display:grid; grid-template-columns:1fr 1fr; column-gap:14px; row-gap:10px; margin-top:19px; }
+    .structure-item { display:flex; align-items:center; min-height:83px; padding:10px; border:1px solid #f0e8ea; border-radius:14px; color:var(--ink); background:#fff; }
+    .structure-item b { display:flex; align-items:center; justify-content:center; flex:0 0 91px; width:91px; height:56px; margin-right:11px; border:1px solid #e8dfe2; border-radius:8px; background:#fbfcfd; color:transparent; font-size:0; position:relative; overflow:hidden; }
+    .structure-item b::before { content:""; position:absolute; left:7px; right:7px; top:7px; height:7px; border-radius:2px; background:var(--accent); }
+    .structure-item b::after { content:""; position:absolute; left:8px; right:8px; bottom:8px; height:27px; border-radius:3px; background:linear-gradient(90deg,#dce4ef 0 32%,transparent 32% 38%,#69a9a0 38% 68%,transparent 68% 74%,#dce4ef 74%); }
+    .structure-item:nth-child(2n) b::before { background:var(--blue); }
+    .structure-item:nth-child(3n) b::before { background:#3d8a83; }
+    .structure-item strong { display:block; font-size:20px; line-height:1.12; }
+    .structure-item span { display:block; margin-top:4px; color:var(--muted); font-size:16px; line-height:1.12; }
+    .module-panel { left:1348px; top:250px; width:452px; height:300px; padding:26px 24px; }
+    .module-grid { display:grid; gap:6px; margin-top:15px; }
+    .module-group { min-height:37px; padding:6px 10px; border-radius:11px; background:#f8fafc; }
+    .module-group strong { display:block; color:var(--accent-dark); font-size:17px; line-height:1.1; }
+    .module-chips { display:flex; flex-wrap:wrap; gap:5px; margin-top:4px; }
+    .module-chips span { display:inline-block; padding:3px 7px; border:1px solid #e4e9ef; border-radius:999px; color:var(--muted); background:#fff; font-size:14px; line-height:1; }
+    .blueprint-panel { left:1348px; top:565px; width:452px; height:255px; padding:22px 24px; border-color:#172033; background:var(--ink); box-shadow:0 12px 30px rgba(23,32,51,.14); }
+    .blueprint-panel .panel-heading { color:#fff; }
+    .blueprint-panel .panel-note { color:#c6cedd; }
+    .blueprint-code { margin-top:10px; padding:9px 12px; border:1px solid rgba(255,255,255,.12); border-radius:12px; background:#101725; color:#f6cbd5; font-family:"SFMono-Regular","Consolas","Liberation Mono",monospace; font-size:13px; line-height:1.28; }
+    .blueprint-code span { display:block; }
+    .blueprint-code b { color:#f4ce6b; font-weight:700; }
+    .blueprint-free { display:block; margin-top:8px; padding:7px 10px; border-radius:9px; color:#ffd7df; background:rgba(232,62,101,.23); font-size:14px; line-height:1.2; }
+    .system-pipeline { position:absolute; left:120px; top:850px; z-index:1; display:grid; grid-template-columns:1fr 34px 1fr 34px 1fr 34px 1fr; align-items:center; width:1680px; height:155px; padding:20px 25px; border:1px solid #f0dce2; border-radius:24px; background:rgba(255,255,255,.9); box-shadow:0 12px 30px rgba(184,47,81,.06); }
+    .pipeline-step { display:block; min-width:0; height:113px; padding:15px 16px; border:1px solid #f1e3e6; border-radius:16px; background:#fff; box-shadow:0 8px 18px rgba(23,32,51,.05); }
+    .pipeline-step b { display:flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:50%; background:#fde0e7; color:var(--accent-dark); font-size:17px; }
+    .pipeline-step strong { display:block; margin-top:10px; color:var(--ink); font-size:21px; line-height:1.1; }
+    .pipeline-step span { display:block; margin-top:6px; color:var(--muted); font-size:16px; line-height:1.2; }
+    .pipeline-arrow { color:var(--accent); font-size:27px; font-style:normal; text-align:center; }
+    .system-slide .slide-footer { left:auto; right:120px; bottom:15px; font-size:18px; }
   </style>
 </head>
 <body>
@@ -262,18 +287,84 @@
       <div class="slide-footer">内置演示 02 / 03 · 先从顶部「AI 生成」开始</div>
     </section>
     <section class="slide system-slide" data-slide-id="slide-03" data-screen-label="03" data-design-check="allow-small">
-      <div class="system-kicker">DESIGN SYSTEM / 自由创作的边界</div>
+      <div class="system-kicker">PPT DESIGN LAB · CONCEPT MAP</div>
       <h2 class="system-title">高级视觉生成系统</h2>
-      <p class="system-intro">不把 PPT 锁死在一套模板里：LorealGPT 自由规划页面，工具用主题、结构和视觉模块把想法稳定地画出来。</p>
-      <div class="theme-strip">
-        <div class="theme-card consulting"><strong>咨询蓝</strong><span>清晰、克制、适合运营分析与管理层汇报</span></div>
-        <div class="theme-card black-gold"><strong>黑金</strong><span>高对比、强调结论，适合战略与提案</span></div>
-        <div class="theme-card warm-rice"><strong>暖米</strong><span>温暖、编辑感，适合项目与活动叙事</span></div>
+      <p class="system-intro">LorealGPT 自由规划与创作，工具用可复用的视觉语言在本地生成、编辑与导出。</p>
+      <div class="system-callout">一键生成优先 · 自由 HTML 作为自动能力</div>
+
+      <div class="system-panel themes-panel">
+        <strong class="panel-heading">01 · 三套视觉系统</strong>
+        <span class="panel-note">决定气质，不限制结构</span>
+        <div class="theme-stack">
+          <div class="theme-card consulting">
+            <strong>咨询蓝</strong>
+            <span>理性、清晰、数据驱动</span>
+            <div class="theme-mini"><span class="theme-mini-lines"></span><span class="theme-mini-bars"><i></i><i></i><i></i><i></i></span></div>
+          </div>
+          <div class="theme-card black-gold">
+            <strong>黑金</strong>
+            <span>高级、权威、管理层表达</span>
+            <div class="theme-mini"><span class="theme-mini-lines"></span><span class="theme-mini-bars"><i></i><i></i><i></i><i></i></span></div>
+          </div>
+          <div class="theme-card warm-rice">
+            <strong>暖米</strong>
+            <span>温暖、编辑感、叙事友好</span>
+            <div class="theme-mini"><span class="theme-mini-lines"></span><span class="theme-mini-bars"><i></i><i></i><i></i><i></i></span></div>
+          </div>
+        </div>
       </div>
-      <div class="system-panel structure-panel"><strong class="panel-heading">10 种页面结构原型</strong><span class="panel-note">先确定信息关系，再让视觉自由组合</span><div class="structure-list"><div class="structure-item"><b>01</b>核心结论</div><div class="structure-item"><b>06</b>矩阵与组合</div><div class="structure-item"><b>02</b>主分析＋辅助证据</div><div class="structure-item"><b>07</b>流程与方法</div><div class="structure-item"><b>03</b>数据仪表盘</div><div class="structure-item"><b>08</b>路线图与时间线</div><div class="structure-item"><b>04</b>趋势＋原因</div><div class="structure-item"><b>09</b>问题—原因—行动</div><div class="structure-item"><b>05</b>对比与选择</div><div class="structure-item"><b>10</b>总结与决策</div></div></div>
-      <div class="system-panel module-panel"><strong class="panel-heading">25+ 视觉模块 · 四大模块组</strong><span class="panel-note">按内容需要组合，不要求每页长得一样</span><div class="module-grid"><div class="module-group"><strong>数据分析</strong><span>KPI · 趋势图 · 排名表 · 矩阵</span></div><div class="module-group"><strong>逻辑表达</strong><span>问题树 · 因果链 · 流程图 · 风险矩阵</span></div><div class="module-group"><strong>项目管理</strong><span>时间线 · 路线图 · 里程碑 · 行动计划</span></div><div class="module-group"><strong>叙事与品牌</strong><span>图片卡 · 案例 · 结论条 · 前后对比</span></div></div></div>
-      <div class="system-panel blueprint-panel"><strong class="panel-heading">页面蓝图 · LorealGPT 一次返回</strong><span class="panel-note">蓝图告诉工具“这一页要表达什么”，自由 HTML 同时作为特殊视觉结果返回</span><div class="blueprint-fields"><span class="blueprint-field">page_goal</span><span class="blueprint-field">key_message</span><span class="blueprint-field">structure</span><span class="blueprint-field">modules</span><span class="blueprint-field">data</span><span class="blueprint-field">copy</span><span class="blueprint-field">visual_style</span><span class="blueprint-field">free_html</span></div></div>
-      <div class="system-pipeline"><strong class="pipeline-label">一键生成逻辑</strong><div class="pipeline-step"><b>01</b><span>用户材料<br>与数据</span></div><em class="pipeline-arrow">→</em><div class="pipeline-step"><b>02</b><span>工具生成<br>完整提示词</span></div><em class="pipeline-arrow">→</em><div class="pipeline-step"><b>03</b><span>LorealGPT<br>自由创作</span></div><em class="pipeline-arrow">→</em><div class="pipeline-step"><b>04</b><span>本地工具生成、<br>编辑与导出</span></div></div>
+
+      <div class="system-panel structure-panel" aria-label="10 种页面结构原型">
+        <strong class="panel-heading">02 · 10 种页面结构原型</strong>
+        <span class="panel-note">构图骨架可自由组合</span>
+        <div class="structure-list">
+          <div class="structure-item"><b>01</b><div><strong>核心结论</strong><span>一句洞察＋关键证据</span></div></div>
+          <div class="structure-item"><b>06</b><div><strong>矩阵与组合</strong><span>客户、产品、优先级</span></div></div>
+          <div class="structure-item"><b>02</b><div><strong>主分析＋证据</strong><span>主视觉＋排名或指标</span></div></div>
+          <div class="structure-item"><b>07</b><div><strong>流程与方法</strong><span>步骤、业务链路、机制</span></div></div>
+          <div class="structure-item"><b>03</b><div><strong>数据仪表盘</strong><span>KPI＋趋势＋结构</span></div></div>
+          <div class="structure-item"><b>08</b><div><strong>路线图</strong><span>阶段、里程碑、计划</span></div></div>
+          <div class="structure-item"><b>04</b><div><strong>趋势＋原因</strong><span>变化、曲线、驱动因素</span></div></div>
+          <div class="structure-item"><b>09</b><div><strong>问题—原因—行动</strong><span>复盘与改善闭环</span></div></div>
+          <div class="structure-item"><b>05</b><div><strong>对比与选择</strong><span>方案、时机、目标对比</span></div></div>
+          <div class="structure-item"><b>10</b><div><strong>总结与决策</strong><span>发现、建议、责任与时间</span></div></div>
+        </div>
+      </div>
+
+      <div class="system-panel module-panel">
+        <strong class="panel-heading">03 · 视觉模块库</strong>
+        <span class="panel-note">25+ 视觉模块 · 第一批可按内容组合</span>
+        <div class="module-grid">
+          <div class="module-group"><strong>数据分析</strong><div class="module-chips"><span>大数字</span><span>折线图</span><span>柱状图</span><span>环形图</span><span>排名表</span></div></div>
+          <div class="module-group"><strong>逻辑表达</strong><div class="module-chips"><span>战略支柱</span><span>问题树</span><span>因果链</span><span>风险矩阵</span></div></div>
+          <div class="module-group"><strong>项目管理</strong><div class="module-chips"><span>时间线</span><span>路线图</span><span>里程碑</span><span>行动计划</span></div></div>
+          <div class="module-group"><strong>叙事与品牌</strong><div class="module-chips"><span>图片洞察</span><span>案例卡片</span><span>前后对比</span><span>结论条</span></div></div>
+        </div>
+      </div>
+
+      <div class="system-panel blueprint-panel">
+        <strong class="panel-heading">04 · 页面蓝图格式</strong>
+        <span class="panel-note">LorealGPT 一次返回；特殊表达返回 free_html</span>
+        <div class="blueprint-code">
+          <span><b>page_goal:</b> 说明业务目标</span>
+          <span><b>headline:</b> 一句话结论</span>
+          <span><b>structure:</b> 页面结构原型</span>
+          <span><b>main_visual:</b> 主视觉模块</span>
+          <span><b>support:</b> 证据与辅助模块</span>
+          <span><b>takeaway:</b> 行动与决策</span>
+        </div>
+        <span class="blueprint-free">无法用标准模块表达时：同时返回 free_html</span>
+      </div>
+
+      <div class="system-pipeline">
+        <div class="pipeline-step"><b>01</b><strong>用户材料</strong><span>内容、数据、目标、受众</span></div>
+        <em class="pipeline-arrow">→</em>
+        <div class="pipeline-step"><b>02</b><strong>工具生成提示词</strong><span>附带主题、结构、模块与蓝图协议</span></div>
+        <em class="pipeline-arrow">→</em>
+        <div class="pipeline-step"><b>03</b><strong>LorealGPT 自由创作</strong><span>完成分析、叙事、页面规划与 HTML</span></div>
+        <em class="pipeline-arrow">→</em>
+        <div class="pipeline-step"><b>04</b><strong>本地生成与编辑</strong><span>渲染、检查、拖动修改、重新设计、导出</span></div>
+      </div>
       <div class="slide-footer">内置演示 03 / 03 · 主题、结构和模块是方法，不是公司内容</div>
     </section>
   </main>
