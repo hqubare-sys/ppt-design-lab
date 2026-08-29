@@ -43,6 +43,8 @@ def main() -> int:
         path = APP / name
         if not path.is_file() or not path.read_text(encoding="utf-8").strip():
             fail(f"missing or empty app/{name}")
+    if 'src="file-parser.js"' not in (APP / "index.html").read_text(encoding="utf-8"):
+        fail("index.html does not load the local material parser")
 
     index = (APP / "index.html").read_text(encoding="utf-8")
     scripts = re.findall(r'<script[^>]+src="([^"]+)"', index)
@@ -113,6 +115,28 @@ def main() -> int:
     project_io = (APP / "project-io.js").read_text(encoding="utf-8")
     if ".pptdlab`" not in project_io or "application/x-ppt-design-lab+json" not in project_io:
         fail("project download does not use the dedicated .pptdlab format")
+    demo_markers = [
+        "slide-03",
+        "intro-slide",
+        "workflow-slide",
+        "system-slide",
+        "咨询蓝",
+        "黑金",
+        "暖米",
+        "10 种页面结构原型",
+        "25+ 视觉模块",
+        "页面蓝图",
+        "free_html",
+        "不上传文件",
+    ]
+    for marker in demo_markers:
+        if marker not in project_io:
+            fail(f"built-in three-page demo is missing: {marker}")
+    if project_io.count('<section class="slide ') < 3:
+        fail("built-in demo must contain three editable slides")
+    for removed_first_page_copy in ["适合这些工作场景", "第一次使用，记住四件事"]:
+        if removed_first_page_copy in project_io:
+            fail(f"built-in first page must preserve the original simple layout: {removed_first_page_copy}")
     if ".pptdlab,.pptdlab.json" not in index:
         fail("project input does not accept new and legacy extensions")
     app_source = (APP / "app.js").read_text(encoding="utf-8")
@@ -120,11 +144,28 @@ def main() -> int:
         fail("import status does not report recognized page count")
     if 'root.setAttribute("id", clone.id)' not in app_source:
         fail("duplicated pages do not receive a fresh DOM id")
-    if 'id="slide-01" data-slide-id="slide-01"' not in app_source:
+    design_system = (APP / "design-system.js").read_text(encoding="utf-8")
+    prompt_source = f"{app_source}\n{design_system}"
+    if 'id="slide-01" data-slide-id="slide-01"' not in prompt_source:
         fail("LorealGPT prompt does not require matching DOM and project slide ids")
-    for marker in ["标准档：封面主标题 84–96px", "普通页标题 58–68px", "正文 30–36px", "一般不要低于 22px", "不能把所有文字按同一倍率全局放大", "双栏布局必须显式划分左右列", "至少保留 80px gutter", "版式自检"]:
-        if marker not in app_source:
+    for marker in ["封面主标题 84–96px", "普通页标题 58–68px", "正文 30–36px", "一般不要低于 22px", "不能把所有文字按同一倍率全局放大", "双栏布局列间至少保留 80px gutter", "版式自检"]:
+        if marker not in prompt_source:
             fail(f"LorealGPT prompt is missing typography/layout guidance: {marker}")
+    for marker in ["一次性完成", "页面蓝图", "咨询蓝", "黑金", "暖米", "不要把整套演示稿做成重复卡片模板"]:
+        if marker not in prompt_source:
+            fail(f"LorealGPT prompt is missing free-design guidance: {marker}")
+    if "自由设计" not in prompt_source or "完整静态 HTML" not in prompt_source:
+        fail("LorealGPT prompt is missing free HTML guidance")
+    parser_path = APP / "file-parser.js"
+    if not parser_path.is_file() or not parser_path.read_text(encoding="utf-8").strip():
+        fail("missing local material parser entry")
+    parser_source = parser_path.read_text(encoding="utf-8")
+    for marker in ["FileReader", "arrayBuffer", ".pdf", ".docx", ".xlsx", ".xls", "本地", "不上传"]:
+        if marker not in parser_source and marker not in index:
+            fail(f"local material parser is missing: {marker}")
+    for marker in [".pdf", ".docx", ".xlsx", ".xls", "文件只在当前浏览器本地读取，不上传"]:
+        if marker not in index:
+            fail(f"material input/privacy boundary is missing: {marker}")
     for marker in ["MOVE_THRESHOLD", "offsetParentPosition", "Math.hypot(dx, dy)", 'event.detail > 1', 'target.children.length > 0 || !target.textContent.trim()']:
         if marker not in app_source:
             fail(f"editor interaction guard is missing: {marker}")
