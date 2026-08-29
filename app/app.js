@@ -15,6 +15,8 @@
     drag: null,
     toastTimer: null,
     aiStep: 1,
+    aiTheme: "consulting-blue",
+    aiMaterialFiles: [],
   };
   const MOVE_THRESHOLD = 6;
 
@@ -47,12 +49,13 @@
       "selectedElementLabel", "elementTextInput", "fontFamilyInput", "fontSizeInput", "textColorInput", "textColorValue", "fontWeightInput",
       "textAlignInput", "lineHeightInput", "elementXInput", "elementYInput", "elementWInput", "elementHInput", "alignLeftButton",
       "alignCenterButton", "alignTopButton", "replaceImageInput", "htmlFileInput", "projectFileInput", "htmlInput", "importStatus",
-      "aiTopicInput", "aiAudienceInput", "aiDurationInput", "aiPagesInput", "aiLanguageInput", "aiUseInput", "aiStyleInput", "aiMaterialsInput",
-      "outlinePromptOutput", "outlineInput", "outlineCopyStatus", "htmlPromptOutput", "htmlCopyStatus", "aiHtmlInput", "toast", "desktopHint",
+      "aiTopicInput", "aiAudienceInput", "aiDurationInput", "aiPagesInput", "aiLanguageInput", "aiUseInput", "aiScenarioInput", "aiStyleInput", "aiMaterialsInput", "aiMaterialsFileInput", "aiMaterialsFileStatus",
+      "htmlPromptOutput", "htmlCopyStatus", "aiHtmlInput", "toast", "desktopHint", "runDesignCheckButton", "startDesignCheckButton", "designCheckResults", "designCheckStatus",
     ].forEach((id) => { dom[id] = document.getElementById(id); });
     dom.importModal = document.getElementById("importModal");
     dom.aiModal = document.getElementById("aiModal");
     dom.privacyModal = document.getElementById("privacyModal");
+    dom.designCheckModal = document.getElementById("designCheckModal");
   }
 
   function setStatus(message, tone) {
@@ -670,6 +673,7 @@
   }
 
   function makePromptContext() {
+    const theme = global.PPTDLDesignSystem?.getTheme(state.aiTheme);
     return {
       topic: dom.aiTopicInput.value.trim() || "未指定主题",
       audience: dom.aiAudienceInput.value.trim() || "业务相关听众",
@@ -677,28 +681,230 @@
       pages: dom.aiPagesInput.value.trim() || "8",
       language: dom.aiLanguageInput.value,
       use: dom.aiUseInput.value.trim() || "内部沟通",
+      scenarioId: dom.aiScenarioInput.value || "custom",
+      scenarioName: dom.aiScenarioInput.options[dom.aiScenarioInput.selectedIndex]?.textContent || "自定义",
       style: dom.aiStyleInput.value.trim() || "清晰、克制、专业",
       materials: dom.aiMaterialsInput.value.trim() || "请先询问我需要补充的事实，不要自行编造数据。",
+      themeId: theme?.id || state.aiTheme,
     };
   }
 
-  function generateOutlinePrompt() {
+  function generatePrompt() {
     const context = makePromptContext();
-    dom.outlinePromptOutput.value = `你是资深演示文稿策划。请为以下需求设计一份 ${context.pages} 页左右的演示文稿大纲。\n\n主题：${context.topic}\n受众：${context.audience}\n演讲时长：${context.duration}\n语言：${context.language}\n用途：${context.use}\n视觉方向：${context.style}\n已有材料：\n${context.materials}\n\n请按“页码｜页面目的｜一句话结论｜关键内容｜建议视觉结构”的格式输出。只使用我提供的事实；缺失处标注“待补充”，不要编造业务数据、品牌事实或图片链接。`; 
+    dom.htmlPromptOutput.value = global.PPTDLDesignSystem?.buildLorealPrompt(context) || `请根据以下需求生成完整静态 HTML 幻灯片文件：\n主题：${context.topic}\n页数：${context.pages}\n已有材料：${context.materials}`;
     setAiStep(2);
-  }
-
-  function generateHtmlPrompt() {
-    const context = makePromptContext();
-    const outline = dom.outlineInput.value.trim() || "请根据上述需求自行组织合理的大纲，并对未提供的事实标注待补充。";
-    dom.htmlPromptOutput.value = `请把下面的演示文稿大纲转换成一个可直接保存为 .html 的完整静态 HTML 幻灯片文件。\n\n【需求】\n主题：${context.topic}\n受众：${context.audience}\n时长：${context.duration}\n页数：${context.pages}\n语言：${context.language}\n用途：${context.use}\n风格：${context.style}\n\n【大纲】\n${outline}\n\n【必须遵守的 HTML 契约】\n1. 只返回完整 HTML，不要 Markdown 代码围栏、解释文字或外部链接。\n2. 使用 <main class="deck" data-deck>，每一页使用 <section class="slide" id="slide-01" data-slide-id="slide-01" data-screen-label="01">；id 与 data-slide-id 必须完全一致，页面专属 CSS 使用对应的 #slide-01 选择器。\n3. 每页固定 1920×1080、16:9；正文模块使用绝对定位，避免复杂脚本和 Canvas。\n4. 所有文字放在独立的 h1/h2/p/span 等叶子元素中，方便后续可视化编辑。画布是 1920×1080 CSS px（约 2px≈1pt），字号必须按信息密度和文本角色设置，不能把所有文字按同一倍率全局放大：\n   - 标准档：封面主标题 84–96px，普通页标题 58–68px，副标题/强调 40–48px，正文 30–36px，注释/页脚 24–28px，标签/表格 22–24px。\n   - 稀疏页可适度放大标题和关键数字；密集页正文可用 28–32px，但一般不要低于 22px。关键数字、标题、正文、注释应分别设置，不要用一个全局 font-size 或统一缩放因子代替层级。\n   - 字号变大时必须同步扩容文本框、增高卡片、换行或重新分栏；禁止只放大字号而保持原容器尺寸。\n   若页面同时包含 .section-label 与 h1/h2，章节标签放在 top:20px 左右，主标题放在 top:50px 或更低，两者必须留有间距且不得重叠。重复卡片、三栏信息和时间线必须使用统一的内边距、图标/标记列宽、文字起始 x 坐标与行高；同一组标题、标签和正文分别对齐到一致的左边线和基线，不要让图标列挤压文字或让时间线标记与文字重叠。\n   - 双栏布局必须显式划分左右列，列间至少保留 80px gutter；圆形主视觉、投票框或大图不能继续水平居中到右栏区域，必须给右侧文字面板预留完整宽度。\n5. CSS 写在 <style> 中，使用变量管理颜色和字号；不要加载字体、图片、CSS、JavaScript 或任何 http(s) 资源。图片位置用带 aria-label 的本地占位符或纯 CSS 图形。\n6. 每个 section.slide 必须默认独立可见；不要使用 display:none、visibility:hidden、opacity:0、data-active 或脚本来控制页面显示。\n7. 不要生成内部翻页按钮、导航圆点、nav-controls 或 nav-dot；PPT Design Lab 会负责缩略图与翻页。\n8. 不要使用 <script>、iframe、表单、动画、视频、外部 API 或自动请求。\n9. 只使用我提供的事实；未知内容标注“待补充”，不要编造。\n10. 生成 HTML 前和输出前都要做版式自检：检查元素重叠、内容裁切、越界、意外换行、标题与小标签重叠、卡片高度不足及左右栏间距；发现问题时优先调整容器尺寸、换行策略或分栏，不要只继续放大字号。\n\n请输出可以直接粘贴回 PPT Design Lab 的 HTML。`;
-    setAiStep(3);
   }
 
   function setAiStep(step) {
     state.aiStep = Number(step) || 1;
     $$('[data-ai-pane]').forEach((pane) => { pane.hidden = pane.dataset.aiPane !== String(state.aiStep); });
     $$('[data-ai-step]').forEach((button) => { button.classList.toggle("is-active", button.dataset.aiStep === String(state.aiStep)); });
+  }
+
+  const TEXT_MATERIAL_LIMIT_BYTES = 2 * 1024 * 1024;
+  const BINARY_MATERIAL_LIMIT_BYTES = 20 * 1024 * 1024;
+  const MATERIAL_TOTAL_LIMIT_BYTES = 40 * 1024 * 1024;
+  const TEXT_MATERIAL_EXTENSIONS = new Set(["txt", "md", "markdown", "csv", "tsv", "json", "html", "htm", "xml"]);
+
+  function fileExtension(file) {
+    return String(file?.name || "").split(".").pop().toLowerCase();
+  }
+
+  function readLocalText(file) {
+    if (typeof file?.text === "function") return file.text();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(reader.error || new Error("读取文件失败。"));
+      reader.readAsText(file);
+    });
+  }
+
+  function htmlToPlainText(source) {
+    const parser = new DOMParser();
+    const parsed = parser.parseFromString(String(source || ""), "text/html");
+    parsed.querySelectorAll("script,style,noscript").forEach((node) => node.remove());
+    return (parsed.body?.textContent || parsed.documentElement?.textContent || "").replace(/\s+/g, " ").trim();
+  }
+
+  function parserResultEntries(value) {
+    if (Array.isArray(value)) return value;
+    if (Array.isArray(value?.files)) return value.files;
+    if (Array.isArray(value?.results)) return value.results;
+    return value ? [value] : [];
+  }
+
+  function parserEntryText(entry) {
+    return String(entry?.text ?? entry?.content ?? entry?.plainText ?? entry?.body ?? "").trim();
+  }
+
+  function parserEntrySummary(entry, text) {
+    const raw = entry?.summary;
+    if (typeof raw === "string" && raw.trim()) return raw.trim();
+    const details = [];
+    if (entry?.pages != null) details.push(`${entry.pages} 页`);
+    if (entry?.pageCount != null) details.push(`${entry.pageCount} 页`);
+    if (entry?.sheets != null) details.push(`${entry.sheets} 个工作表`);
+    if (entry?.sheetCount != null) details.push(`${entry.sheetCount} 个工作表`);
+    if (entry?.worksheets != null) details.push(`${entry.worksheets} 个工作表`);
+    if (entry?.characters != null) details.push(`${entry.characters} 字符`);
+    if (entry?.charCount != null) details.push(`${entry.charCount} 字符`);
+    if (!details.length && text) details.push(`${text.length} 字符`);
+    return details.join("，");
+  }
+
+  async function readMaterialsFiles(fileList) {
+    const files = Array.from(fileList || []);
+    if (!files.length) return;
+    let totalBytes = 0;
+    const validFiles = [];
+    const rejected = [];
+    files.forEach((file) => {
+      const ext = fileExtension(file);
+      if (!TEXT_MATERIAL_EXTENSIONS.has(ext) && !["pdf", "docx", "xlsx", "xls"].includes(ext)) {
+        rejected.push(`${file.name}：格式不支持`);
+        return;
+      }
+      const isText = TEXT_MATERIAL_EXTENSIONS.has(ext);
+      const fileLimit = isText ? TEXT_MATERIAL_LIMIT_BYTES : BINARY_MATERIAL_LIMIT_BYTES;
+      if (file.size > fileLimit) {
+        rejected.push(`${file.name}：超过 ${isText ? "2MB" : "20MB"}`);
+        return;
+      }
+      if (totalBytes + file.size > MATERIAL_TOTAL_LIMIT_BYTES) {
+        rejected.push(`${file.name}：本次选择总计超过 40MB`);
+        return;
+      }
+      totalBytes += file.size;
+      validFiles.push(file);
+    });
+    if (!validFiles.length) {
+      dom.aiMaterialsFileStatus.textContent = rejected.join("；") || "没有可读取的文件";
+      dom.aiMaterialsFileStatus.className = "materials-file-status is-error";
+      return;
+    }
+    dom.aiMaterialsFileStatus.textContent = `正在读取 ${validFiles.length} 个本地文件…`;
+    dom.aiMaterialsFileStatus.className = "materials-file-status";
+    const output = [];
+    const fileWarnings = [];
+    const parsedFiles = new Set();
+    try {
+      if (global.PPTDLFileParser?.parseFiles) {
+        const parsed = parserResultEntries(await global.PPTDLFileParser.parseFiles(validFiles));
+        parsed.forEach((entry, index) => {
+          const fileName = String(entry?.name || entry?.fileName || validFiles[index]?.name || "本地材料");
+          const text = parserEntryText(entry);
+          const summary = parserEntrySummary(entry, text);
+          parsedFiles.add(fileName);
+          if (entry?.error || entry?.status === "error" || entry?.ok === false || !text) {
+            const warning = Array.isArray(entry?.warnings) ? entry.warnings.join("；") : "";
+            fileWarnings.push(`${fileName}：${entry?.error || entry?.message || warning || "未返回可用文字内容"}`);
+            return;
+          }
+          const source = [`【本地材料：${fileName}${summary ? `｜${summary}` : ""}】`, text].filter(Boolean).join("\n");
+          if (source) output.push(source);
+        });
+      }
+      for (const file of validFiles) {
+        if (parsedFiles.has(file.name)) continue;
+        const ext = fileExtension(file);
+        if (!TEXT_MATERIAL_EXTENSIONS.has(ext)) {
+          fileWarnings.push(`${file.name}：当前环境未返回可用文字内容，请稍后重试或复制文字内容到材料框。`);
+          continue;
+        }
+        const raw = await readLocalText(file);
+        const text = ["html", "htm"].includes(ext) ? htmlToPlainText(raw) : raw.trim();
+        if (text) output.push(`【本地材料：${file.name}｜${text.length} 字符】\n${text}`);
+        else fileWarnings.push(`${file.name}：文件没有可用文字内容。`);
+      }
+      const existing = dom.aiMaterialsInput.value.trim();
+      dom.aiMaterialsInput.value = [existing, ...output].filter(Boolean).join("\n\n");
+      state.aiMaterialFiles = validFiles.map((file) => file.name);
+      const accepted = validFiles.map((file) => file.name).join("、");
+      const warnings = [...rejected, ...fileWarnings];
+      const suffix = warnings.length ? `；${warnings.join("；")}` : "";
+      dom.aiMaterialsFileStatus.textContent = `已读取：${accepted}${suffix}`;
+      dom.aiMaterialsFileStatus.className = warnings.length ? "materials-file-status is-error" : "materials-file-status is-success";
+    } catch (error) {
+      dom.aiMaterialsFileStatus.textContent = error?.message || "本地材料读取失败";
+      dom.aiMaterialsFileStatus.className = "materials-file-status is-error";
+      showToast(dom.aiMaterialsFileStatus.textContent, "error");
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value || "").replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[character]));
+  }
+
+  function issueNodeLabel(node) {
+    const text = String(node?.textContent || "").replace(/\s+/g, " ").trim();
+    return text ? `“${text.slice(0, 34)}${text.length > 34 ? "…" : ""}”` : node?.tagName?.toLowerCase() || "元素";
+  }
+
+  function checkSlideDocument(doc) {
+    const root = doc?.querySelector(".pptdlab-frame-root > .slide, .pptdlab-frame-root > [data-slide]");
+    if (!root) return ["未找到可检查的幻灯片根节点。"];
+    const win = doc.defaultView;
+    const rootRect = root.getBoundingClientRect();
+    const issues = [];
+    root.querySelectorAll("*").forEach((node) => {
+      if (node.hasAttribute("data-editor-selection") || node.id === "__editor_selection") return;
+      const style = win.getComputedStyle(node);
+      const label = issueNodeLabel(node);
+      const isLeafText = node.children.length === 0 && node.textContent.trim() && !["svg", "path", "style"].includes(node.tagName.toLowerCase());
+      const allowsSmallText = Boolean(node.closest('[data-design-check~="allow-small"], .system-slide'));
+      if (isLeafText && !allowsSmallText && parseFloat(style.fontSize) < 22) issues.push(`${label}：字号 ${Math.round(parseFloat(style.fontSize))}px，小于 22px。`);
+      if (isLeafText && node.clientWidth > 0 && node.clientHeight > 0 && (node.scrollWidth > node.clientWidth + 2 || node.scrollHeight > node.clientHeight + 2)) issues.push(`${label}：文字可能溢出文本框。`);
+      const rect = node.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0 && (rect.left < rootRect.left - 1 || rect.top < rootRect.top - 1 || rect.right > rootRect.right + 1 || rect.bottom > rootRect.bottom + 1)) issues.push(`${label}：元素超出 1920×1080 画布。`);
+    });
+    root.querySelectorAll("[data-local-placeholder], .image-placeholder, [aria-label*='占位'], [aria-label*='待补充']").forEach((node) => {
+      issues.push(`${issueNodeLabel(node)}：存在缺图或本地图片占位。`);
+    });
+    return Array.from(new Set(issues));
+  }
+
+  function inspectSlideLocally(slide) {
+    return new Promise((resolve) => {
+      const host = document.createElement("iframe");
+      host.setAttribute("sandbox", "allow-same-origin");
+      host.setAttribute("aria-hidden", "true");
+      host.style.cssText = "position:fixed;left:-10000px;top:-10000px;width:1920px;height:1080px;border:0;visibility:hidden;pointer-events:none";
+      let finished = false;
+      const finish = () => {
+        if (finished) return;
+        finished = true;
+        const issues = checkSlideDocument(host.contentDocument);
+        host.remove();
+        resolve(issues);
+      };
+      host.addEventListener("load", () => setTimeout(finish, 40), { once: true });
+      document.body.appendChild(host);
+      host.srcdoc = frameDocument(slide, state.project.css);
+      setTimeout(finish, 1600);
+    });
+  }
+
+  function renderDesignCheckResults(results) {
+    const issueCount = results.reduce((sum, item) => sum + item.issues.length, 0);
+    dom.designCheckResults.innerHTML = `<div class="check-summary${issueCount ? " has-issues" : ""}">${issueCount ? `发现 ${issueCount} 项需要留意的问题` : "检查完成：未发现基础布局问题"}</div>${results.map((item) => `<section class="check-page${item.issues.length ? "" : " is-clean"}"><div class="check-page-title">第 ${item.index + 1} 页 · ${escapeHtml(item.label)}<span>${item.issues.length ? `${item.issues.length} 项` : "通过"}</span></div>${item.issues.length ? `<ul>${item.issues.map((issue) => `<li>${escapeHtml(issue)}</li>`).join("")}</ul>` : `<div class="check-clean-label">字号、溢出、越界和缺图占位检查通过</div>`}</section>`).join("")}`;
+    dom.designCheckStatus.textContent = `共检查 ${results.length} 页`;
+  }
+
+  async function runDesignCheck() {
+    if (!state.project?.slides?.length) return;
+    syncFrameToProject();
+    dom.startDesignCheckButton.disabled = true;
+    dom.designCheckStatus.textContent = "正在逐页检查…";
+    dom.designCheckResults.innerHTML = "<div class=\"check-empty\">正在创建本地临时画布，请稍候…</div>";
+    const results = [];
+    for (let index = 0; index < state.project.slides.length; index += 1) {
+      const slide = state.project.slides[index];
+      dom.designCheckStatus.textContent = `正在检查第 ${index + 1} / ${state.project.slides.length} 页…`;
+      results.push({ index, label: slide.label || `页面 ${index + 1}`, issues: await inspectSlideLocally(slide) });
+    }
+    renderDesignCheckResults(results);
+    dom.startDesignCheckButton.disabled = false;
   }
 
   async function copyText(text, statusNode) {
@@ -809,6 +1015,8 @@
     document.getElementById("saveProjectButton").addEventListener("click", handleSaveProject);
     document.getElementById("exportHtmlButton").addEventListener("click", handleExportHTML);
     document.getElementById("exportPptxButton").addEventListener("click", handleExportPptx);
+    dom.runDesignCheckButton.addEventListener("click", () => { dom.designCheckResults.innerHTML = "<div class=\"check-empty\">点击“开始检查”扫描当前项目。</div>"; dom.designCheckStatus.textContent = ""; setModal(dom.designCheckModal, true); });
+    dom.startDesignCheckButton.addEventListener("click", runDesignCheck);
     document.getElementById("addSlideButton").addEventListener("click", newSlide);
     document.getElementById("duplicatePageButton").addEventListener("click", duplicateSlide);
     document.getElementById("deletePageButton").addEventListener("click", deleteSlide);
@@ -819,6 +1027,7 @@
     document.getElementById("clearSelectionButton").addEventListener("click", () => setSelectedNode(null));
     dom.htmlFileInput.addEventListener("change", () => { openHTMLFile(dom.htmlFileInput.files[0]); dom.htmlFileInput.value = ""; });
     dom.projectFileInput.addEventListener("change", () => { openProjectFile(dom.projectFileInput.files[0]); dom.projectFileInput.value = ""; });
+    dom.aiMaterialsFileInput.addEventListener("change", () => { readMaterialsFiles(dom.aiMaterialsFileInput.files); dom.aiMaterialsFileInput.value = ""; });
     dom.replaceImageInput.addEventListener("change", () => { replaceImage(dom.replaceImageInput.files[0]); dom.replaceImageInput.value = ""; });
     dom.pageLabelInput.addEventListener("change", () => updatePageLabel(dom.pageLabelInput.value));
     dom.pageBackgroundInput.addEventListener("input", () => updatePageBackground(dom.pageBackgroundInput.value));
@@ -840,17 +1049,19 @@
     dom.alignCenterButton.addEventListener("click", () => { const node = getSelectedNode(); const root = getFrameRoot(); const width = node?.getBoundingClientRect().width || 0; setElementGeometry({ x: (1920 - width) / 2 }, "已水平居中元素", true); });
     dom.alignTopButton.addEventListener("click", () => setElementGeometry({ y: 0 }, "已顶端对齐元素", true));
     document.getElementById("sanitizeImportButton").addEventListener("click", () => importHTMLText(dom.htmlInput.value, dom.importModal));
-    document.getElementById("generateOutlineButton").addEventListener("click", generateOutlinePrompt);
-    document.getElementById("generateHtmlPromptButton").addEventListener("click", generateHtmlPrompt);
-    document.getElementById("copyOutlinePromptButton").addEventListener("click", () => copyText(dom.outlinePromptOutput.value, dom.outlineCopyStatus));
+    document.getElementById("generatePromptButton").addEventListener("click", generatePrompt);
     document.getElementById("copyHtmlPromptButton").addEventListener("click", () => copyText(dom.htmlPromptOutput.value, dom.htmlCopyStatus));
     document.getElementById("loadAiHtmlButton").addEventListener("click", () => importHTMLText(dom.aiHtmlInput.value, dom.aiModal));
+    $$("[data-theme-id]").forEach((button) => button.addEventListener("click", () => {
+      state.aiTheme = button.dataset.themeId || "consulting-blue";
+      $$("[data-theme-id]").forEach((card) => { const selected = card === button; card.classList.toggle("is-selected", selected); card.setAttribute("aria-pressed", String(selected)); });
+    }));
     $$('[data-ai-step]').forEach((button) => button.addEventListener("click", () => setAiStep(button.dataset.aiStep)));
     document.getElementById("showPrivacyButton").addEventListener("click", () => setModal(dom.privacyModal, true));
     $$('[data-close-modal]').forEach((button) => button.addEventListener("click", () => setModal(document.getElementById(button.dataset.closeModal), false)));
-    [dom.importModal, dom.aiModal, dom.privacyModal].forEach((modal) => modal.addEventListener("click", (event) => { if (event.target === modal) setModal(modal, false); }));
+    [dom.importModal, dom.aiModal, dom.privacyModal, dom.designCheckModal].forEach((modal) => modal.addEventListener("click", (event) => { if (event.target === modal) setModal(modal, false); }));
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") [dom.importModal, dom.aiModal, dom.privacyModal].forEach((modal) => { if (!modal.hidden) setModal(modal, false); });
+      if (event.key === "Escape") [dom.importModal, dom.aiModal, dom.privacyModal, dom.designCheckModal].forEach((modal) => { if (!modal.hidden) setModal(modal, false); });
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z") { event.preventDefault(); event.shiftKey ? redo() : undo(); }
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "y") { event.preventDefault(); redo(); }
     });

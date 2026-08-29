@@ -11,7 +11,7 @@
   <div class="app-shell">
     <header class="topbar">
       <div class="brand-block">
-        <div class="brand-mark" aria-hidden="true">✦</div>
+        <div class="brand-mark"><img src="assets/civra-c-logo.svg" alt="CIVRA" width="30" height="30"></div>
         <div>
           <div class="brand-name">PPT Design Lab</div>
           <div class="brand-subtitle">HTML → 可编辑演示文稿</div>
@@ -58,7 +58,8 @@
             <span id="projectTitleLabel">未命名演示文稿</span>
             <span class="dirty-indicator" id="dirtyIndicator" hidden>未保存</span>
           </div>
-          <div class="editor-shortcuts">
+      <div class="editor-shortcuts">
+            <button class="button button-small design-check-button" id="runDesignCheckButton" type="button" title="检查所有页面的字号、溢出、越界和缺图占位">设计检查</button>
             <button class="icon-button" id="undoButton" type="button" aria-label="撤销" title="撤销 (⌘/Ctrl+Z)">↶</button>
             <button class="icon-button" id="redoButton" type="button" aria-label="恢复" title="恢复 (⌘/Ctrl+Shift+Z)">↷</button>
             <span class="zoom-label" id="zoomLabel">100%</span>
@@ -144,6 +145,7 @@
 
   <input class="visually-hidden" id="htmlFileInput" type="file" accept=".html,.htm,text/html">
   <input class="visually-hidden" id="projectFileInput" type="file" accept=".pptdlab,.pptdlab.json,.json,application/json,application/octet-stream,application/x-ppt-design-lab+json">
+  <input class="visually-hidden" id="aiMaterialsFileInput" type="file" multiple accept=".txt,.md,.markdown,.csv,.tsv,.json,.html,.htm,.xml,.pdf,.docx,.xlsx,.xls,text/plain,text/markdown,text/csv,application/json,text/html,application/xml,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
 
   <div class="modal-backdrop" id="importModal" hidden>
     <section class="modal" role="dialog" aria-modal="true" aria-labelledby="importModalTitle">
@@ -157,9 +159,9 @@
   <div class="modal-backdrop" id="aiModal" hidden>
     <section class="modal modal-large" role="dialog" aria-modal="true" aria-labelledby="aiModalTitle">
       <div class="modal-header"><div><span class="eyebrow-label">LOREALGPT FLOW</span><h2 id="aiModalTitle">用 LorealGPT 生成 HTML PPT</h2></div><button class="icon-button modal-close" data-close-modal="aiModal" type="button" aria-label="关闭">×</button></div>
-      <p class="modal-intro">工作台不连接公司 AI。先在这里生成提示词，再手工复制到 LorealGPT；最后把返回的 HTML 粘贴回来。</p>
+      <p class="modal-intro">工作台不连接公司 AI。填写需求和材料后复制一份完整提示词到 LorealGPT；它会在内部完成规划并只返回 HTML，最后把 HTML 粘贴回来。</p>
       <div class="ai-steps" role="tablist" aria-label="生成步骤">
-        <button class="ai-step is-active" data-ai-step="1" type="button"><span>1</span>需求</button><span class="step-line"></span><button class="ai-step" data-ai-step="2" type="button"><span>2</span>大纲提示词</button><span class="step-line"></span><button class="ai-step" data-ai-step="3" type="button"><span>3</span>HTML 提示词</button><span class="step-line"></span><button class="ai-step" data-ai-step="4" type="button"><span>4</span>载入结果</button>
+        <button class="ai-step is-active" data-ai-step="1" type="button"><span>1</span>需求与材料</button><span class="step-line"></span><button class="ai-step" data-ai-step="2" type="button"><span>2</span>完整提示词</button><span class="step-line"></span><button class="ai-step" data-ai-step="3" type="button"><span>3</span>载入 HTML</button>
       </div>
       <div class="ai-pane" data-ai-pane="1">
         <div class="field-grid ai-fields">
@@ -169,28 +171,36 @@
           <div class="field"><label class="field-label" for="aiPagesInput">页数</label><input class="text-input" id="aiPagesInput" type="number" min="1" max="40" value="8"></div>
           <div class="field"><label class="field-label" for="aiLanguageInput">语言</label><select class="text-input" id="aiLanguageInput"><option>中文</option><option>中英双语</option><option>英文</option></select></div>
           <div class="field"><label class="field-label" for="aiUseInput">用途</label><input class="text-input" id="aiUseInput" placeholder="例如：季度业务汇报"></div>
-          <div class="field"><label class="field-label" for="aiStyleInput">视觉风格</label><input class="text-input" id="aiStyleInput" placeholder="例如：品牌感、克制、留白"></div>
-          <div class="field field-span-2"><label class="field-label" for="aiMaterialsInput">已有材料 / 关键事实</label><textarea class="text-area" id="aiMaterialsInput" rows="3" placeholder="可以粘贴不敏感的材料摘要"></textarea></div>
+          <div class="field"><label class="field-label" for="aiScenarioInput">使用场景</label><select class="text-input" id="aiScenarioInput"><option value="operations">运营报表</option><option value="strategy">战略讲解</option><option value="project">项目介绍</option><option value="reporting">工作汇报</option><option value="proposal">方案提案</option><option value="custom">自定义</option></select></div>
+          <div class="field field-span-2"><label class="field-label" for="aiStyleInput">补充视觉偏好（可选）</label><input class="text-input" id="aiStyleInput" placeholder="例如：品牌感、克制、留白；工具会结合所选视觉系统"></div>
+          <div class="field field-span-2">
+            <span class="field-label">选择视觉系统</span>
+            <div class="theme-card-grid" role="group" aria-label="选择视觉系统">
+              <button class="theme-card is-selected" data-theme-id="consulting-blue" type="button" aria-pressed="true">
+                <span class="theme-swatch theme-swatch-blue"><i></i><i></i><i></i></span><span class="theme-card-copy"><strong>咨询蓝</strong><small>清晰、克制、证据驱动</small></span>
+              </button>
+              <button class="theme-card" data-theme-id="black-gold" type="button" aria-pressed="false">
+                <span class="theme-swatch theme-swatch-gold"><i></i><i></i><i></i></span><span class="theme-card-copy"><strong>黑金</strong><small>沉稳、聚焦、决策感</small></span>
+              </button>
+              <button class="theme-card" data-theme-id="warm-editorial" type="button" aria-pressed="false">
+                <span class="theme-swatch theme-swatch-warm"><i></i><i></i><i></i></span><span class="theme-card-copy"><strong>暖米</strong><small>温暖、从容、编辑感</small></span>
+              </button>
+            </div>
+          </div>
+          <div class="field field-span-2"><label class="field-label" for="aiMaterialsInput">已有材料 / 关键事实</label><textarea class="text-area" id="aiMaterialsInput" rows="4" placeholder="可以粘贴不敏感的材料摘要，也可以读取本地文字、PDF、DOCX 或 Excel 文件"></textarea><div class="materials-actions"><label class="local-file-button" for="aiMaterialsFileInput"><span aria-hidden="true">＋</span>读取本地材料</label><span class="materials-file-status" id="aiMaterialsFileStatus">尚未读取文件</span></div><p class="materials-note">文件只在当前浏览器本地读取，不上传；支持 TXT、MD、CSV、TSV、JSON、HTML、XML、PDF、DOCX、XLSX、XLS。PDF 仅支持文字型；DOCX 不含 DOC；Excel 读取单元格内容，不理解宏或图表。文本单文件 ≤ 2MB，PDF/DOCX/Excel 单文件 ≤ 20MB，本次选择总计 ≤ 40MB。</p></div>
         </div>
-        <div class="ai-pane-footer"><span class="section-note">敏感材料请按公司政策处理；此页面不会自动发送内容。</span><button class="button button-primary" id="generateOutlineButton" type="button">生成第 1 步提示词 →</button></div>
+        <div class="ai-pane-footer"><span class="section-note">一次交互：LorealGPT 会自行规划页面和视觉表达，工具只负责本地生成、编辑与导出。</span><button class="button button-primary" id="generatePromptButton" type="button">生成完整提示词 →</button></div>
       </div>
       <div class="ai-pane" data-ai-pane="2" hidden>
-        <div class="instruction-card"><strong>把下面提示词复制到 LorealGPT</strong><span>完成后，把它生成的“大纲”粘贴到下方，再进入下一步。</span></div>
-        <textarea class="code-area prompt-area" id="outlinePromptOutput" readonly></textarea>
-        <div class="prompt-actions"><button class="button button-outline" id="copyOutlinePromptButton" type="button">复制提示词</button><span class="copy-status" id="outlineCopyStatus"></span></div>
-        <label class="field-label" for="outlineInput">粘贴 LorealGPT 返回的大纲（可选）</label><textarea class="text-area" id="outlineInput" rows="5" placeholder="在这里粘贴大纲文本"></textarea>
-        <div class="ai-pane-footer"><button class="button button-ghost" data-ai-step="1" type="button">← 返回修改需求</button><button class="button button-primary" id="generateHtmlPromptButton" type="button">生成第 2 步提示词 →</button></div>
+        <div class="instruction-card"><strong>只需把这一份提示词复制到 LorealGPT</strong><span>LorealGPT 会在内部完成内容分析、叙事规划、页面蓝图和自由视觉设计，最终只返回完整 HTML。</span></div>
+        <textarea class="code-area prompt-area" id="htmlPromptOutput" readonly></textarea>
+        <div class="prompt-actions"><button class="button button-outline" id="copyHtmlPromptButton" type="button">复制完整提示词</button><span class="copy-status" id="htmlCopyStatus"></span></div>
+        <div class="ai-pane-footer"><button class="button button-ghost" data-ai-step="1" type="button">← 返回修改需求</button><button class="button button-primary" data-ai-step="3" type="button">我已拿到 HTML →</button></div>
       </div>
       <div class="ai-pane" data-ai-pane="3" hidden>
-        <div class="instruction-card"><strong>把结构化 HTML 提示词复制到 LorealGPT</strong><span>要求它只返回完整 HTML，不要 Markdown 代码围栏。</span></div>
-        <textarea class="code-area prompt-area" id="htmlPromptOutput" readonly></textarea>
-        <div class="prompt-actions"><button class="button button-outline" id="copyHtmlPromptButton" type="button">复制提示词</button><span class="copy-status" id="htmlCopyStatus"></span></div>
-        <div class="ai-pane-footer"><button class="button button-ghost" data-ai-step="2" type="button">← 返回大纲</button><button class="button button-primary" data-ai-step="4" type="button">我已拿到 HTML →</button></div>
-      </div>
-      <div class="ai-pane" data-ai-pane="4" hidden>
         <div class="instruction-card"><strong>粘贴 LorealGPT 返回的完整 HTML</strong><span>清洗后只保留结构化幻灯片与静态样式，页面内容仍只在当前浏览器内存中。</span></div>
         <textarea class="code-area" id="aiHtmlInput" spellcheck="false" placeholder="<!doctype html> ..."></textarea>
-        <div class="ai-pane-footer"><button class="button button-ghost" data-ai-step="3" type="button">← 返回提示词</button><button class="button button-primary" id="loadAiHtmlButton" type="button">清洗并载入演示文稿</button></div>
+        <div class="ai-pane-footer"><button class="button button-ghost" data-ai-step="2" type="button">← 返回完整提示词</button><button class="button button-primary" id="loadAiHtmlButton" type="button">清洗并载入演示文稿</button></div>
       </div>
     </section>
   </div>
@@ -203,6 +213,15 @@
     </section>
   </div>
 
+  <div class="modal-backdrop" id="designCheckModal" hidden>
+    <section class="modal modal-small design-check-modal" role="dialog" aria-modal="true" aria-labelledby="designCheckModalTitle">
+      <div class="modal-header"><div><span class="eyebrow-label">LOCAL QA</span><h2 id="designCheckModalTitle">设计检查</h2></div><button class="icon-button modal-close" data-close-modal="designCheckModal" type="button" aria-label="关闭">×</button></div>
+      <p class="modal-intro">逐页在本地临时画布检查字号、文字溢出、元素越界和缺图占位。不会上传项目内容。</p>
+      <div class="design-check-results" id="designCheckResults"><div class="check-empty">点击“开始检查”扫描当前项目。</div></div>
+      <div class="modal-footer"><span class="modal-status" id="designCheckStatus"></span><button class="button button-ghost" data-close-modal="designCheckModal" type="button">关闭</button><button class="button button-primary" id="startDesignCheckButton" type="button">开始检查</button></div>
+    </section>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
   <script src="vendor/html-to-image.js" defer></script>
@@ -210,6 +229,8 @@
   <script src="sanitizer.js" defer></script>
   <script src="project-io.js" defer></script>
   <script src="exporter.js" defer></script>
+  <script src="design-system.js" defer></script>
+  <script src="file-parser.js" defer></script>
   <script src="app.js" defer></script>
 </body>
 </html>
