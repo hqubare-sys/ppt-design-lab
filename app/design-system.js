@@ -77,6 +77,8 @@
   // prompt and static checks share the same explicit vocabulary).
   const FREE_DESIGN_LAYOUT_ID = "free_html";
   const FREE_DESIGN_LABEL = "自由HTML";
+  const HTML_CODE_FENCE_OPEN = "\x60\x60\x60html";
+  const HTML_CODE_FENCE_CLOSE = "\x60\x60\x60";
 
   const layoutPrototypes = [
     { id: "core-conclusion", name: "核心结论", summary: "结论型标题 + 3 个支撑证据", bestFor: "管理层摘要、关键发现、工作汇报", modules: ["key-takeaway", "kpi-card", "evidence-list"] },
@@ -191,6 +193,22 @@
   }
 
   const safeBuildLorealPrompt = (context) => buildLorealPrompt(context)
+    .replace(
+      "不要把整套演示稿做成重复卡片模板，也不要输出大纲、解释或 Markdown 代码围栏。你需要在内部先完成页面蓝图规划，最终只返回一份可直接粘贴到 PPT Design Lab 的完整静态 HTML。",
+      "不要把整套演示稿做成重复卡片模板，也不要输出大纲或解释。你需要在内部先完成页面蓝图规划，最终把一份可直接粘贴到 PPT Design Lab 的完整静态 HTML 放进一个且仅一个 Markdown HTML 代码块中。不要把 HTML 当作富文本直接渲染；代码块外不要输出任何文字，以便 LorealGPT 界面提供 Copy code 按钮。"
+    )
+    .replace(
+      "1. 只返回完整 HTML（包含 <!doctype html>、<html>、<head>、<style>、<body>），不要 Markdown 代码围栏、说明文字或外部链接。",
+      `1. 最终回复必须是一个且仅一个 Markdown HTML 代码块：开始标记必须精确为「${HTML_CODE_FENCE_OPEN}」，结束标记必须精确为「${HTML_CODE_FENCE_CLOSE}」。把包含 <!doctype html>、<html>、<head>、<style>、<body> 的完整 HTML 全部放在该代码块内；不要把 HTML 当作富文本直接渲染，代码块外不得输出说明、大纲、致歉、提示或任何其他文字。`
+    )
+    .replace(
+      "3. 每页固定 1920×1080、16:9；使用静态 HTML/CSS/SVG 画图，避免脚本和 Canvas；每页默认独立可见。",
+      "3. 每页固定 1920×1080、16:9；使用静态 HTML/CSS/SVG 画图，不依赖 JavaScript 或 Canvas；每页默认独立可见，所有关键信息和图表必须在 JavaScript 完全禁用时仍能静态呈现。"
+    )
+    .replace(
+      "现在请先在内部规划页面蓝图，再直接输出最终完整 HTML。不要输出蓝图文本，不要询问用户，不要返回 JSON。",
+      `现在请先在内部规划页面蓝图，再严格按上述协议输出最终完整 HTML：只输出一个以「${HTML_CODE_FENCE_OPEN}」开始、以「${HTML_CODE_FENCE_CLOSE}」结束的代码块。不要输出蓝图文本，不要询问用户，不要返回 JSON，代码块外不得有任何文字。`
+    )
     .replace("页面可以自由设计，页面结构和模块不必都来自清单，但要让元数据诚实描述实际表达方式。", `页面可以自由设计，页面结构和模块不必都来自清单。如果 10 种结构原型都不适合某页，请直接自由设计并设置 data-layout="${FREE_DESIGN_LAYOUT_ID}"；自由页仍须与其他页面一起包含在同一份最终 HTML 中，不需要用户额外确认或二次生成。元数据必须诚实描述实际表达方式。`)
     .replace("图片请使用用户提供的本地文件路径（工具会提示替换）或带 aria-label 的本地占位符/纯 CSS 图形。", "不要写入 file://、本地绝对路径或不可访问的图片地址；图片请使用带 aria-label 的本地占位符、data-local-placeholder 标记或纯 CSS/SVG 图形，用户之后可在工具中替换本地图片。");
 

@@ -159,7 +159,7 @@
   <div class="modal-backdrop" id="aiModal" hidden>
     <section class="modal modal-large" role="dialog" aria-modal="true" aria-labelledby="aiModalTitle">
       <div class="modal-header"><div><span class="eyebrow-label">LOREALGPT FLOW</span><h2 id="aiModalTitle">用 LorealGPT 生成 HTML PPT</h2></div><button class="icon-button modal-close" data-close-modal="aiModal" type="button" aria-label="关闭">×</button></div>
-      <p class="modal-intro">工作台不连接公司 AI。填写需求和材料后复制一份完整提示词到 LorealGPT；它会在内部完成规划并只返回 HTML，最后把 HTML 粘贴回来。</p>
+      <p class="modal-intro">工作台不连接公司 AI。填写需求和材料后复制一份完整提示词到 LorealGPT；它会在内部完成规划，并把完整 HTML 放在一个可复制的 html 代码块中，最后把代码粘贴回来。</p>
       <div class="ai-steps" role="tablist" aria-label="生成步骤">
         <button class="ai-step is-active" data-ai-step="1" type="button"><span>1</span>需求与材料</button><span class="step-line"></span><button class="ai-step" data-ai-step="2" type="button"><span>2</span>完整提示词</button><span class="step-line"></span><button class="ai-step" data-ai-step="3" type="button"><span>3</span>载入 HTML</button>
       </div>
@@ -192,13 +192,13 @@
         <div class="ai-pane-footer"><span class="section-note">一次交互：LorealGPT 会自行规划页面和视觉表达，工具只负责本地生成、编辑与导出。</span><button class="button button-primary" id="generatePromptButton" type="button">生成完整提示词 →</button></div>
       </div>
       <div class="ai-pane" data-ai-pane="2" hidden>
-        <div class="instruction-card"><strong>只需把这一份提示词复制到 LorealGPT</strong><span>LorealGPT 会在内部完成内容分析、叙事规划、页面蓝图和自由视觉设计，最终只返回完整 HTML。</span></div>
+        <div class="instruction-card"><strong>只需把这一份提示词复制到 LorealGPT</strong><span>LorealGPT 会在内部完成内容分析、叙事规划、页面蓝图和自由视觉设计，最终把完整 HTML 放在一个带 Copy code 按钮的 html 代码块中。</span></div>
         <textarea class="code-area prompt-area" id="htmlPromptOutput" readonly></textarea>
         <div class="prompt-actions"><button class="button button-outline" id="copyHtmlPromptButton" type="button">复制完整提示词</button><span class="copy-status" id="htmlCopyStatus"></span></div>
         <div class="ai-pane-footer"><button class="button button-ghost" data-ai-step="1" type="button">← 返回修改需求</button><button class="button button-primary" data-ai-step="3" type="button">我已拿到 HTML →</button></div>
       </div>
       <div class="ai-pane" data-ai-pane="3" hidden>
-        <div class="instruction-card"><strong>粘贴 LorealGPT 返回的完整 HTML</strong><span>清洗后只保留结构化幻灯片与静态样式，页面内容仍只在当前浏览器内存中。</span></div>
+        <div class="instruction-card"><strong>复制代码块中的完整 HTML 并粘贴</strong><span>点击 LorealGPT 代码块右上角的 Copy code；清洗后只保留结构化幻灯片与静态样式，页面内容仍只在当前浏览器内存中。</span></div>
         <textarea class="code-area" id="aiHtmlInput" spellcheck="false" placeholder="<!doctype html> ..."></textarea>
         <div class="ai-pane-footer"><button class="button button-ghost" data-ai-step="2" type="button">← 返回完整提示词</button><button class="button button-primary" id="loadAiHtmlButton" type="button">清洗并载入演示文稿</button></div>
       </div>

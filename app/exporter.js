@@ -22,10 +22,10 @@
     const css = String(project.css || "");
     const slides = (project.slides || []).map((slide) => slide.html).join("\n");
     const playerCSS = `
-      html,body{margin:0;min-height:100%;background:#111827;color:#fff;font-family:Arial,sans-serif}
+      html,body{margin:0;min-height:100%}
       body{display:grid;place-items:center;overflow:hidden}
       .pptdlab-player{position:relative;width:100vw;height:100vh;display:grid;place-items:center}
-      .pptdlab-stage{position:relative;width:min(100vw,177.7778vh);height:min(56.25vw,100vh);overflow:hidden;background:#fff;color:#111}
+      .pptdlab-stage{position:relative;width:min(100vw,177.7778vh);height:min(56.25vw,100vh);overflow:hidden}
       .pptdlab-stage>.slide{display:none!important;visibility:visible!important;opacity:1!important;width:1920px;height:1080px;transform-origin:top left}
       .pptdlab-stage>.slide.is-active{display:block!important}
       .pptdlab-controls{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:8px;align-items:center;padding:8px 12px;border-radius:99px;background:rgba(17,24,39,.86);font:14px/1 Arial,sans-serif;z-index:10}
