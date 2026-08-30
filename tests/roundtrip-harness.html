@@ -14,14 +14,15 @@
   <script src="../app/sanitizer.js"></script>
   <script src="../app/project-io.js"></script>
   <script src="../app/exporter.js"></script>
+  <script src="../app/design-system.js"></script>
   <script>
-    (function () {
+    (async function () {
       const status = document.getElementById("status");
       const source = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>通用往返示例</title><style>
-        :root{--paper:#fff4df;--ink:#172033;--accent:#b84a2c}
-        html,body{margin:0;padding:0}
+        :root{--paper:#171512;--ink:#f7f1e6;--accent:#c9a44c}
+        html,body{margin:0;padding:0;color:var(--ink);font-family:Georgia,serif}
         .deck{width:1920px}
-        .slide{position:relative;width:1920px;height:1080px;background:var(--paper);color:var(--ink)}
+        .slide{position:relative;width:1920px;height:1080px;background:var(--paper)}
         h1{position:absolute;left:120px;top:100px;font-size:72px}
       </style></head><body><main class="deck" data-deck>
         <section class="slide" data-slide-id="slide-01"><h1>通用页面一</h1></section>
@@ -38,11 +39,42 @@
         assert(!/body\s*\{[^}]*display\s*:\s*grid/i.test(project.css), `${label} 仍含播放器 body grid 规则。`);
       }
 
+      function standaloneHeadingStyle(html) {
+        return new Promise((resolve, reject) => {
+          const frame = document.createElement("iframe");
+          frame.setAttribute("sandbox", "allow-same-origin");
+          frame.hidden = true;
+          frame.addEventListener("load", () => {
+            try {
+              const heading = frame.contentDocument.querySelector(".pptdlab-stage .slide h1");
+              assert(heading, "独立 HTML 中未找到测试标题。");
+              const computed = frame.contentWindow.getComputedStyle(heading);
+              resolve({ color: computed.color, fontFamily: computed.fontFamily });
+            } catch (error) {
+              reject(error);
+            } finally {
+              frame.remove();
+            }
+          }, { once: true });
+          frame.srcdoc = html;
+          document.body.appendChild(frame);
+        });
+      }
+
       try {
+        const prompt = window.PPTDLDesignSystem.buildLorealPrompt({ topic: "通用季度复盘", pages: 3 });
+        assert(prompt.includes("```html"), "LorealGPT 提示词没有要求 html Markdown 代码块。 ");
+        assert(prompt.includes("代码块外不得输出"), "LorealGPT 提示词没有禁止代码块外说明。 ");
+        assert(prompt.includes("Copy code 按钮"), "LorealGPT 提示词没有说明可复制代码交付方式。 ");
+        assert(prompt.includes("JavaScript 完全禁用时仍能静态呈现"), "LorealGPT 提示词没有要求静态兼容。 ");
+        assert(!prompt.includes("不要 Markdown 代码围栏"), "LorealGPT 提示词仍含相反的代码围栏指令。 ");
         const project = window.PPTDLProjectIO.createFromHTML(source);
         const standalone = window.PPTDLExporter.buildStandaloneHTML(project);
         assert((standalone.match(/data-pptdlab-project-style/g) || []).length === 1, "导出 HTML 未标记项目样式。 ");
         assert((standalone.match(/data-pptdlab-player-style/g) || []).length === 1, "导出 HTML 未标记播放器样式。 ");
+        const headingStyle = await standaloneHeadingStyle(standalone);
+        assert(headingStyle.color === "rgb(247, 241, 230)", `播放器污染了主题继承文字颜色：${headingStyle.color}`);
+        assert(/Georgia/i.test(headingStyle.fontFamily), `播放器污染了项目字体：${headingStyle.fontFamily}`);
 
         const reopened = window.PPTDLProjectIO.createFromHTML(standalone);
         assertProject(reopened, "新导出 HTML");
@@ -54,13 +86,13 @@
           .replace('</style><style data-pptdlab-player-style>', '');
         const legacyProject = window.PPTDLProjectIO.createFromHTML(legacy);
         assertProject(legacyProject, "旧版导出 HTML");
-        assert(legacyProject.css.includes("--paper:#fff4df"), "旧版导入误删了项目主题变量。 ");
+        assert(legacyProject.css.includes("--paper:#171512"), "旧版导入误删了项目主题变量。 ");
 
         const saved = window.PPTDLProjectIO.serialize(project);
         const restored = window.PPTDLProjectIO.normalizeProject(JSON.parse(saved));
         assertProject(restored, "项目文件");
         assert(window.PPTDLProjectIO.projectFilename("通用往返示例") === "通用往返示例.pptdlab", "新项目扩展名不正确。 ");
-        status.textContent = "PASS\n新旧 HTML 导入、页面数量、播放器 CSS 隔离和项目 JSON 往返均通过。";
+        status.textContent = "PASS\nLorealGPT 代码块交付协议、新旧 HTML 导入、播放器 CSS 隔离、主题颜色/字体继承和项目 JSON 往返均通过。";
       } catch (error) {
         status.textContent = "FAIL: " + (error.message || error);
       }

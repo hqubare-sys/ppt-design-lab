@@ -65,6 +65,11 @@ def main() -> int:
     if "writeFile" not in (APP / "exporter.js").read_text(encoding="utf-8"):
         fail("PPTX exporter has no explicit writeFile call")
     exporter = (APP / "exporter.js").read_text(encoding="utf-8")
+    player_css_source = exporter.split("const playerCSS = `", 1)[1].split("`;", 1)[0]
+    if re.search(r"html,body\{[^}]*(?:background|color|font-family)\s*:", player_css_source):
+        fail("standalone player html/body still overrides project theme inheritance")
+    if re.search(r"\.pptdlab-stage\{[^}]*(?:background|color|font-family)\s*:", player_css_source):
+        fail("standalone player stage still overrides project theme inheritance")
     if "attachShadow" in exporter:
         fail("PPTX renderer still uses Shadow DOM, which breaks imported :root variables")
     for marker in ['document.createElement("iframe")', 'sandbox", "allow-same-origin"', "host.srcdoc", "waitForRenderFrames", "renderDocument.fonts?.ready", "exportBackgroundColor", "stabilizeSingleLineText", 'whiteSpace = "nowrap"', 'wordBreak = "keep-all"']:
@@ -146,6 +151,11 @@ def main() -> int:
         fail("duplicated pages do not receive a fresh DOM id")
     design_system = (APP / "design-system.js").read_text(encoding="utf-8")
     prompt_source = f"{app_source}\n{design_system}"
+    for marker in ["HTML_CODE_FENCE_OPEN", "一个且仅一个 Markdown HTML 代码块", "Copy code 按钮", "代码块外不得输出", "JavaScript 完全禁用时仍能静态呈现"]:
+        if marker not in design_system:
+            fail(f"LorealGPT prompt is missing copyable HTML delivery contract: {marker}")
+    if "Copy code 按钮" not in index:
+        fail("LorealGPT workflow UI does not explain the copyable html code block")
     if 'id="slide-01" data-slide-id="slide-01"' not in prompt_source:
         fail("LorealGPT prompt does not require matching DOM and project slide ids")
     for marker in ["封面主标题 84–96px", "普通页标题 58–68px", "正文 30–36px", "一般不要低于 22px", "不能把所有文字按同一倍率全局放大", "双栏布局列间至少保留 80px gutter", "版式自检"]:
